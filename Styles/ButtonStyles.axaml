@@ -1,0 +1,129 @@
+﻿<!-- Styles/ButtonStyles.axaml -->
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    
+    <Style Selector="Button.MyCustomButton">
+        <Setter Property="Background" Value="#007ACC"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="BorderBrush" Value="#005A9E"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="{TemplateBinding CornerRadius}">
+                    <ContentPresenter Name="PART_ContentPresenter"
+                                      Content="{TemplateBinding Content}"
+                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                      Padding="{TemplateBinding Padding}"/>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
+    <Style Selector="Button.MyCustomButton:pointerover">
+        <Setter Property="Background" Value="#005A9E"/>
+        <Setter Property="BorderBrush" Value="#004275"/>
+    </Style>
+
+    <Style Selector="Button.MyCustomButton:pressed">
+        <Setter Property="Background" Value="#004275"/>
+        <Setter Property="BorderBrush" Value="#003055"/>
+    </Style>
+
+    <Style Selector="Button.MyCustomButton:disabled">
+        <Setter Property="Background" Value="#CCCCCC"/>
+        <Setter Property="BorderBrush" Value="#999999"/>
+        <Setter Property="Foreground" Value="#666666"/>
+        <Setter Property="Opacity" Value="0.6"/>
+    </Style>
+    
+    
+    
+    <!--操作按钮 复制等-->
+    <Style Selector="Button.OptionButton">
+        <Setter Property="Background" Value="#007ACC"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="BorderBrush" Value="#005A9E"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="{TemplateBinding CornerRadius}">
+                    <ContentPresenter Name="PART_ContentPresenter"
+                                      Content="{TemplateBinding Content}"
+                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                      Padding="{TemplateBinding Padding}"/>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
+    <Style Selector="Button.OptionButton:pointerover">
+        <Setter Property="Background" Value="#005A9E"/>
+        <Setter Property="BorderBrush" Value="#004275"/>
+        <Setter Property="Foreground" Value="White"/>
+    </Style>
+
+    <Style Selector="Button.OptionButton:pressed">
+        <Setter Property="Background" Value="#004275"/>
+        <Setter Property="BorderBrush" Value="#003055"/>
+        <Setter Property="Foreground" Value="White"/>
+    </Style>
+
+    <Style Selector="Button.OptionButton:disabled">
+        <Setter Property="Background" Value="#CCCCCC"/>
+        <Setter Property="BorderBrush" Value="#999999"/>
+        <Setter Property="Foreground" Value="#666666"/>
+        <Setter Property="Opacity" Value="0.6"/>
+    </Style>
+    
+    
+    <!-- 专门为按钮内的 TextBlock 设置样式 -->
+    <Style Selector="Button.OptionButton TextBlock">
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="FontSize" Value="10"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+
+    <!-- 悬停时 TextBlock 样式 -->
+    <Style Selector="Button.OptionButton:pointerover TextBlock">
+        <Setter Property="Foreground" Value="Red"/>
+        <Setter Property="Background" Value="White"/>
+    </Style>
+
+    <!-- 按下时 TextBlock 样式 -->
+    <Style Selector="Button.OptionButton:pressed TextBlock">
+        <Setter Property="Foreground" Value="Red"/>
+        <Setter Property="Background" Value="White"/>
+    </Style>
+
+    <!-- 禁用时 TextBlock 样式 -->
+    <Style Selector="Button.OptionButton:disabled TextBlock">
+        <Setter Property="Foreground" Value="#666666"/>
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+
+</Styles>
+ 

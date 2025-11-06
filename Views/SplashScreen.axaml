@@ -1,0 +1,63 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="ava_demo_new.Views.SplashScreen"
+        Title="SplashScreen"
+        Width="1200" Height="700"
+        WindowStartupLocation="CenterScreen"
+      
+        CanResize="False"
+        SystemDecorations="None"
+        ExtendClientAreaToDecorationsHint="False"  
+        ShowInTaskbar="False"
+        Background="Transparent"
+        BorderThickness="0"
+        Padding="0">
+    <Grid >
+        <!-- 主容器 -->
+        <Border Background="#667eea" 
+                CornerRadius="20" 
+                Margin="0"
+                >
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="25">
+                <!-- Logo -->
+                <Border Width="80" Height="80" Background="White" CornerRadius="40">
+                    <TextBlock Text="🚀" FontSize="40" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Border>
+                
+                <!-- 应用信息 -->
+                <StackPanel HorizontalAlignment="Center">
+                    <TextBlock Text="ava-demo-new" 
+                               FontSize="28" 
+                               FontWeight="Bold" 
+                               Foreground="White"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="跨平台桌面应用" 
+                               FontSize="14" 
+                               Foreground="#E0E0E0"
+                               HorizontalAlignment="Center"
+                               Margin="0,5,0,0"/>
+                </StackPanel>
+                
+                <!-- 加载指示 -->
+                <StackPanel Spacing="15" HorizontalAlignment="Center">
+                    <ProgressBar IsIndeterminate="True" 
+                                 Width="150" 
+                                 Height="6" 
+                                 Background="Transparent"
+                                 Foreground="White"/>
+                    <TextBlock x:Name="ProgressText" 
+                               Text="正在初始化应用..." 
+                               Foreground="White" 
+                               FontSize="12"
+                               HorizontalAlignment="Center"/>
+                </StackPanel>
+                
+                <!-- 版本 -->
+                <TextBlock Text="Version 1.0.0" 
+                           FontSize="10" 
+                           Foreground="#C0C0C0"
+                           HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

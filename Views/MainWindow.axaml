@@ -1,0 +1,540 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:AvaloniaEdit="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
+        xmlns:vm="using:ava_demo_new.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="ava_demo_new.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="{Binding WindowTitle}"
+        
+        Width="1200"
+        Height="700"
+        MinWidth="800"
+        MinHeight="600"
+        WindowStartupLocation="CenterScreen"
+        WindowState="Normal"
+    
+        >
+
+    <Window.Styles>
+        <!-- 引用外部样式文件 -->
+        <StyleInclude Source="avares://ava-demo-new/Styles/ButtonStyles.axaml" />
+    </Window.Styles>
+
+    <Grid>
+        <!-- 定义两行：第一行占15%，第二行占85% -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="15*" />  <!-- 第一行：约15% 高度 -->
+            <RowDefinition Height="85*" />  <!-- 第二行：约85% 高度 -->
+        </Grid.RowDefinitions>
+
+        <!-- ===================== 第一行：左中右三块（10% | 80% | 10%）===================== -->
+        <Grid Grid.Row="0">
+            <!-- 水平三列：10% | 80% | 10% -->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="10*" />
+                <ColumnDefinition Width="80*" />
+                <ColumnDefinition Width="10*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- 左侧模块 -->
+            <!-- Command="{Binding MyCustomButtonClickCommand}" -->
+            <Border Grid.Column="0" Background="Transparent" Margin="0">
+                <Button Click="homeClick" Classes="MyCustomButton"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        Command="{Binding MyCustomButtonClickCommand}"
+                        >
+                    
+                    <!-- 按钮的内容：可以放图片、文字，或 StackPanel 组合 -->
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Image Source="/Assets/home.png"
+                               Width="100"
+                               Height="100"
+                               Stretch="Uniform" />
+                        <!-- <TextBlock Text="按钮" FontSize="10" HorizontalAlignment="Center" Margin="0,4,0,0" /> -->
+                    </StackPanel>
+                </Button>
+            </Border>
+
+
+            <!-- 中间模块 -->
+            <Border Grid.Column="1" Background="LightGreen" Margin="0">
+                <Grid>
+                    <!-- 定义两行：第一行（上半部分）、第二行（下半部分） -->
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />   <!-- 第一行，比如占 50% 或自动 -->
+                        <RowDefinition Height="*" />   <!-- 第二行，比如占 50% 或自动 -->
+                    </Grid.RowDefinitions>
+
+                    <!-- ===================== 第一行：占满宽度，高度自适应 ===================== -->
+                    <!-- 第一行：15个小模块，横向排列 -->
+                    <Grid Grid.Row="0">
+                        <!-- 横向 15 列，每列等宽 -->
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" /> <!-- 模块 1 -->
+                            <ColumnDefinition Width="1.5*" />  <!-- 模块 2 -->
+                            <ColumnDefinition Width="*" />  <!-- 模块 3 -->
+                            <ColumnDefinition Width="*" />  <!-- 模块 4 -->
+                            <ColumnDefinition Width="*" />  <!-- 模块 5 -->
+                            <ColumnDefinition Width="*" />  <!-- 模块 6 -->
+                            <ColumnDefinition Width="*" />  <!-- 模块 7 -->
+                            <ColumnDefinition Width="*" />  <!-- 模块 8 -->
+                            <ColumnDefinition Width="1.5*" />  <!-- 模块 9 -->
+                            <ColumnDefinition Width="1.5*" />  <!-- 模块 10 -->
+                            <ColumnDefinition Width="2*" />  <!-- 模块 11 -->
+                            <ColumnDefinition Width="1.5*" />  <!-- 模块 12 -->
+                            <ColumnDefinition Width="2*" />  <!-- 模块 13 -->
+                            <ColumnDefinition Width="2*" />  <!-- 模块 14 -->
+                            <ColumnDefinition Width="*" />  <!-- 模块 15 -->
+                        </Grid.ColumnDefinitions>
+
+                        <!-- 15 个模块，每个占一列 -->
+                        <Border Grid.Column="0" Background="LightCyan">
+                            <!-- <Button Classes="MyCustomButton" -->
+                            <!--         HorizontalAlignment="Center" -->
+                            <!--         VerticalAlignment="Center" -->
+                            <!--         Width="80" -->
+                            <!--         Height="80" -->
+                            <!--        Click="PcClick" -->
+                            <!-- > -->
+                            <!-- 按钮的内容：可以放图片、文字，或 StackPanel 组合 -->
+                            <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <Image Source="/Assets/home.png"
+                                       Width="32"
+                                       Height="32"
+                                       Stretch="Uniform"
+                                       PointerPressed="PcClick" />
+                                <TextBlock x:Name="ButtonText" Text="按钮" FontSize="10" HorizontalAlignment="Center"
+                                           Margin="0,4,0,0" />
+                            </StackPanel>
+                            <!-- </Button> -->
+
+
+                            <!-- <TextBlock Text="1" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" /> -->
+                        </Border>
+                        <Border Grid.Column="1" Background="LightYellow">
+                            <TextBlock Text="2" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <Border Grid.Column="2" Background="LightSalmon">
+                            <Button   
+                                BorderThickness="0"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                Classes="MyCustomButton"
+                                Click="treeClick">
+                                <TextBlock Text="Tree" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Button>
+                            
+                        </Border>
+                        <Border Grid.Column="3" Background="MistyRose">
+                            <TextBlock Text="4" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <Border Grid.Column="4" Background="Lavender">
+                            <TextBlock Text="5" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <Border Grid.Column="5" Background="Honeydew">
+                            <TextBlock Text="6" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <Border Grid.Column="6" Background="LightBlue">
+                            <TextBlock Text="7" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <Border Grid.Column="7" Background="Pink">
+                            <TextBlock Text="8" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <Border Grid.Column="8" Background="Khaki">
+                            <TextBlock Text="9" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <Border Grid.Column="9" Background="PaleGreen">
+                            <TextBlock Text="10" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <Border Grid.Column="10" Background="Thistle">
+                            <TextBlock Text="11" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <Border Grid.Column="11" Background="Tan">
+                            <TextBlock Text="12" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <Border Grid.Column="12" Background="Wheat">
+                            <TextBlock Text="NullTool" FontSize="10" HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" />
+                        </Border>
+                        <Border Grid.Column="13" Background="Plum">
+                            <TextBlock Text="World" FontSize="10" HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" />
+                        </Border>
+                        <Border Grid.Column="14" Background="LightGoldenrodYellow">
+                            <Button   
+                                    BorderThickness="0"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    Classes="MyCustomButton"
+                                    Click="ShowCustomDialog">
+                                <Image Source="/Assets/home.png"
+                                       Width="32"
+                                       Height="32"
+                                       Stretch="Uniform" />
+                            </Button>
+                        </Border>
+                    </Grid>
+
+                    <!-- ===================== 第二行：分为左右两列（左85% | 右15%） ===================== -->
+                    <Grid Grid.Row="1">
+                        <!-- 横向两个列：左 85% | 右 15% -->
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="85*" />  <!-- 左侧占 85% 宽度 -->
+                            <ColumnDefinition Width="15*" />  <!-- 右侧占 15% 宽度 -->
+                        </Grid.ColumnDefinitions>
+
+                        <!-- 左列模块 (85%) -->
+                        <Border Grid.Column="0" Background="Orange">
+                            <TextBlock Text="预警信息"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       FontSize="14" />
+                        </Border>
+
+                        <!-- 右列模块 (15%) -->
+                        <Border Grid.Column="1" Background="LightCoral">
+                            <TextBlock Text="右模块 (15%)"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       FontSize="14" />
+                        </Border>
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <!-- 右侧模块 -->
+            <Border Grid.Column="2" Background="Purple" Margin="0">
+                <TextBlock Text="右侧 10%"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           FontSize="16" />
+            </Border>
+        </Grid>
+
+
+        <!-- ===================== 第二行：剩余 85% 区域（左90% | 右10%） ==================== -->
+        
+      
+              <Grid Grid.Row="1">
+            <!-- 定义两列：左侧 90% | 右侧 10% -->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="95*" />  <!-- 左侧占 90% 宽度 -->
+                <ColumnDefinition Width="5*" />  <!-- 右侧占 10% 宽度 -->
+            </Grid.ColumnDefinitions>
+
+            <!-- 左侧模块 (90%) -->
+            
+            <Border Grid.Column="0">
+                <Grid>
+                    <!-- 定义三行，高度按比例分配 -->
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="85*" />  <!-- 第一行：85% -->
+                        <RowDefinition Height="5*" />  <!-- 第二行：5% -->
+                        <RowDefinition Height="10*" /> <!-- 第三行：15% -->
+                    </Grid.RowDefinitions>
+
+
+                   
+                    <!-- ===================== 第一行：85% 高度 → 横向 3 列 (75% | 15% | 10%) ===================== -->
+                    <Grid Grid.Row="0">
+                        <!-- 横向 3 列：宽度比例 75% | 15% | 10% -->
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="85*" />  <!-- 第 1 列：75% -->
+                            <ColumnDefinition Width="5*" />  <!-- 第 2 列：15% -->
+                            <ColumnDefinition Width="5*" />  <!-- 第 3 列：10% -->
+                        </Grid.ColumnDefinitions>
+
+                        <!-- ===================== 第 1 列 (75%)：保持不变（一个整体模块） ===================== -->
+                        <ContentControl   Name="MainContent" Background="White">
+                        <Border Grid.Column="0" Background="LightSkyBlue">
+                            <!-- <TextBlock Text="列 1 (75%)" -->
+                            <!--            HorizontalAlignment="Center" -->
+                            <!--            VerticalAlignment="Center" -->
+                            <!--            FontSize="12" /> -->
+                            <AvaloniaEdit:TextEditor Name="CodeEditor"
+                                                     Text="public"
+                                                     SyntaxHighlighting="C#"
+                                                     ShowLineNumbers="True"
+                                                     FontFamily="Cascadia Code, Consolas, Menlo, Monospace"
+                                                     FontSize="14"
+                                                     Background="white"
+                                                     Foreground="Black"
+                                                     WordWrap="False"
+                                                     HorizontalScrollBarVisibility="Auto"
+                                                     VerticalScrollBarVisibility="Auto" />
+
+                        </Border>
+                        </ContentControl>
+                        <!-- ===================== 第 2 列 (15%)：纵向 6 个模块 ===================== -->
+                        <Grid Grid.Column="1">
+                            <!-- 纵向 6 行，每行等高 -->
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />  <!-- 模块 1 -->
+                                <RowDefinition Height="*" />  <!-- 模块 2 -->
+                                <RowDefinition Height="*" />  <!-- 模块 3 -->
+                                <RowDefinition Height="*" />  <!-- 模块 4 -->
+                                <RowDefinition Height="*" />  <!-- 模块 5 -->
+                                <RowDefinition Height="*" />  <!-- 模块 6 -->
+                            </Grid.RowDefinitions>
+
+                            <!-- 6 个模块，从上到下 -->
+                            <!-- <Border Grid.Row="0" Background="LightCyan" PointerPressed="CopyButton_Click"> -->
+                            <!--     <TextBlock Text="复制" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" /> -->
+                            <!-- </Border> -->
+                            <!-- <Border Grid.Row="1" Background="LightGreen" PointerPressed="CutButton_Click"> -->
+                            <!--     <TextBlock Text="剪切" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" /> -->
+                            <!-- </Border> -->
+                            <!-- <Border Grid.Row="2" Background="LightYellow" PointerPressed="PasteButton_Click"> -->
+                            <!--     <TextBlock Text="粘贴" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" /> -->
+                            <!-- </Border> -->
+                            <!-- <Border Grid.Row="3" Background="MistyRose" PointerPressed="DeleteButton_Click"> -->
+                            <!--     <TextBlock Text="删除" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" /> -->
+                            <!-- </Border> -->
+                            <!-- <Border Grid.Row="4" Background="Lavender" PointerPressed="UndoButton_Click"> -->
+                            <!--     <TextBlock Text="撤销" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" /> -->
+                            <!-- </Border> -->
+                            <!-- <Border Grid.Row="5" Background="Honeydew" PointerPressed="RedoButton_Click"> -->
+                            <!--     <TextBlock Text="重做" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" /> -->
+                            <!-- </Border> -->
+
+
+                            <Button Grid.Row="0"
+                                    Classes="OptionButton"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    Click="CopyButton_Click">
+                                <TextBlock Text="复制" FontSize="10" HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                            </Button>
+
+                            <Button Grid.Row="1"
+                                    Classes="OptionButton"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    Click="CutButton_Click">
+                                <TextBlock Text="剪切" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Button>
+
+                            <Button Grid.Row="2"
+                                    Classes="OptionButton"
+
+
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    Click="PasteButton_Click">
+                                <TextBlock Text="粘贴" FontSize="10" HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                            </Button>
+
+                            <Button Grid.Row="3"
+                                    Classes="OptionButton"
+
+
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    Click="DeleteButton_Click">
+                                <TextBlock Text="删除" FontSize="10" HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                            </Button>
+
+                            <Button Grid.Row="4"
+                                    Classes="OptionButton"
+
+
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    Click="UndoButton_Click">
+                                <TextBlock Text="撤销" FontSize="10" HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                            </Button>
+
+                            <Button Grid.Row="5"
+                                    Classes="OptionButton"
+
+
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    Click="RedoButton_Click">
+                                <TextBlock Text="重做" FontSize="10" HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                            </Button>
+                        </Grid>
+
+                        <!-- ===================== 第 3 列 (10%)：视觉 5 个模块（实际 6 高度，第5个占2份） ===================== -->
+                        <Grid Grid.Column="2">
+                            <!-- 纵向 6 行，但第 5 行占 2 份高度，其余各占 1 份 -->
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />  <!-- 模块 1 -->
+                                <RowDefinition Height="*" />  <!-- 模块 2 -->
+                                <RowDefinition Height="*" />  <!-- 模块 3 -->
+                                <RowDefinition Height="*" />  <!-- 模块 4 -->
+                                <RowDefinition Height="2*" /> <!-- 模块 5（合并原第5+6，占2份，看起来是第5个） -->
+                                <!-- 注意：没有第6行，因为第5已经占了2份，总共是 1+1+1+1+2 = 6 份 -->
+                            </Grid.RowDefinitions>
+
+                            <!-- 5 个模块（视觉上） -->
+                            <Border Grid.Row="0" Background="LightPink">
+                                <TextBlock Text="3-1" FontSize="10" HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                            </Border>
+                            <Border Grid.Row="1" Background="Khaki">
+                                <TextBlock Text="3-2" FontSize="10" HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                            </Border>
+                            <Border Grid.Row="2" Background="Plum">
+                                <TextBlock Text="3-3" FontSize="10" HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                            </Border>
+                            <Border Grid.Row="3" Background="Tan">
+                                <TextBlock Text="3-4" FontSize="10" HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                            </Border>
+                            <Border Grid.Row="4" Background="LightGoldenrodYellow">
+                                <TextBlock Text="3-5（合并3-5+3-6）" FontSize="10" HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                            </Border>
+                            <!-- 没有第6个 Border，因为第5个已经是 2 份高度，总共 6 份 -->
+                        </Grid>
+                    </Grid>
+
+                    <!-- ===================== 第二行：5% 高度 → 横向 3 个模块 ===================== -->
+                    <Grid Grid.Row="1">
+                        <!-- 横向 3 列，等宽 -->
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- 3 个小模块，横向排列 -->
+                        <Border Grid.Column="0" Background="Orange">
+                            <TextBlock Text="模块 2-1" FontSize="10" HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" />
+                        </Border>
+                        <Border Grid.Column="1" Background="LightCoral">
+                            <TextBlock Text="模块 2-2" FontSize="10" HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" />
+                        </Border>
+                        <Border Grid.Column="2" Background="Gold">
+                            <TextBlock Text="模块 2-3" FontSize="10" HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" />
+                        </Border>
+                    </Grid>
+
+                    <!-- ===================== 第三行：15% 高度 → 横向 7 个模块 ===================== -->
+                    <Grid Grid.Row="2">
+                        <!-- 横向 7 列，等宽 -->
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- 7 个小模块，横向排列 -->
+                        <Border Grid.Column="0" Background="LightGreen">
+                            <TextBlock Text="模块 3-1" FontSize="10" HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" />
+                        </Border>
+                        <Border Grid.Column="1" Background="LightSkyBlue">
+                            <TextBlock Text="模块 3-2" FontSize="10" HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" />
+                        </Border>
+                        <Border Grid.Column="2" Background="MistyRose">
+                            <TextBlock Text="模块 3-3" FontSize="10" HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" />
+                        </Border>
+                        <Border Grid.Column="3" Background="Lavender">
+                            <TextBlock Text="模块 3-4" FontSize="10" HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" />
+                        </Border>
+                        <Border Grid.Column="4" Background="Honeydew">
+                            <TextBlock Text="模块 3-5" FontSize="10" HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" />
+                        </Border>
+                        <Border Grid.Column="5" Background="Khaki">
+                            <TextBlock Text="模块 3-6" FontSize="10" HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" />
+                        </Border>
+                        <Border Grid.Column="6" Background="LightSkyBlue">
+                            <TextBlock Text="模块 3-7" FontSize="10" HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" />
+                        </Border>
+                    </Grid>
+                </Grid>
+            </Border>
+         
+
+            <!-- 右侧模块 (5%) -->
+            <Border Grid.Column="1" Background="Transparent">  <!-- 外层透明或不设置，由内部Grid控制 -->
+                <Grid>
+                    <!-- 定义 6 行：每行等高 -->
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />  <!-- 模块 1 -->
+                        <RowDefinition Height="*" />  <!-- 模块 2 -->
+                        <RowDefinition Height="*" />  <!-- 模块 3 -->
+                        <RowDefinition Height="*" />  <!-- 模块 4 -->
+                        <RowDefinition Height="*" />  <!-- 模块 5 -->
+                        <RowDefinition Height="*" />  <!-- 模块 6 -->
+                    </Grid.RowDefinitions>
+
+                    <!-- 6 个垂直排列的小模块 -->
+                    <Border Grid.Row="0" Background="yellow">
+                        <TextBlock Text="模块 1"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   FontSize="10" />
+                    </Border>
+
+                    <Border Grid.Row="1" Background="LightGreen">
+                        <TextBlock Text="模块 2"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   FontSize="10" />
+                    </Border>
+
+                    <Border Grid.Row="2" Background="LightBlue">
+                        <TextBlock Text="模块 3"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   FontSize="10" />
+                    </Border>
+
+                    <Border Grid.Row="3" Background="Wheat">
+                        <TextBlock Text="模块 4"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   FontSize="10" />
+                    </Border>
+
+                    <Border Grid.Row="4" Background="Khaki">
+                        <TextBlock Text="模块 5"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   FontSize="10" />
+                    </Border>
+
+                    <Border Grid.Row="5" Background="Plum">
+                        <TextBlock Text="模块 6"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   FontSize="10" />
+                    </Border>
+                </Grid>
+            </Border>
+        </Grid>
+    
+      
+
+    </Grid>
+
+</Window>

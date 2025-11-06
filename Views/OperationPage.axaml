@@ -1,0 +1,66 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="ava_demo_new.Views.OperationPage">
+    
+    <Grid Background="#F5F5F5">
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="30">
+            <TextBlock Text="高级拖拽演示" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center"/>
+            
+            <!-- 控制面板 -->
+            <Border Background="White" Padding="15" CornerRadius="8" BorderBrush="#DDD" BorderThickness="1">
+                <StackPanel Spacing="10" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Content="撤销" Click="UndoButton_Click" Background="#6C757D" Foreground="White" Padding="10,5"/>
+                    <Button Content="重做" Click="RedoButton_Click" Background="#6C757D" Foreground="White" Padding="10,5"/>
+                    <Button Content="网格吸附" Click="ToggleGridButton_Click" Background="#17A2B8" Foreground="White" Padding="10,5"/>
+                    <Button Content="碰撞检测" Click="ToggleCollisionButton_Click" Background="#DC3545" Foreground="White" Padding="10,5"/>
+                    <Button Content="保存布局" Click="SaveLayoutButton_Click" Background="#28A745" Foreground="White" Padding="10,5"/>
+                    <Button Content="重置布局" Click="ResetLayoutButton_Click" Background="#FFC107" Foreground="Black" Padding="10,5"/>
+                </StackPanel>
+            </Border>
+            
+            <!-- 拖拽区域 -->
+            <Border Background="White" Padding="20" CornerRadius="8" BorderBrush="#DDD" BorderThickness="1"
+                    Width="400" Height="300" x:Name="DragContainer">
+                
+                <Canvas x:Name="DragCanvas" Background="Transparent">
+                    <Canvas.Styles>
+                        <!-- 碰撞时的样式 -->
+                        <Style Selector="Border.colliding">
+                            <Setter Property="BorderBrush" Value="Red"/>
+                            <Setter Property="BorderThickness" Value="3"/>
+                        </Style>
+                    </Canvas.Styles>
+                    
+                    <!-- 可拖拽的方块1 -->
+                    <Border Width="60" Height="60" Background="#007ACC" CornerRadius="5"
+                            Canvas.Left="50" Canvas.Top="50" x:Name="Block1"
+                            Cursor="SizeAll">
+                        <TextBlock Text="1" Foreground="White" FontSize="16" 
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    
+                    <!-- 可拖拽的方块2 -->
+                    <Border Width="60" Height="60" Background="#28A745" CornerRadius="5"
+                            Canvas.Left="150" Canvas.Top="50" x:Name="Block2"
+                            Cursor="SizeAll">
+                        <TextBlock Text="2" Foreground="White" FontSize="16" 
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    
+                    <!-- 可拖拽的方块3 -->
+                    <Border Width="60" Height="60" Background="#DC3545" CornerRadius="5"
+                            Canvas.Left="250" Canvas.Top="50" x:Name="Block3"
+                            Cursor="SizeAll">
+                        <TextBlock Text="3" Foreground="White" FontSize="16" 
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    
+                </Canvas>
+            </Border>
+            
+            <Button Content="返回主页" Click="BackButton_Click" 
+                    Background="#6C757D" Foreground="White" 
+                    Padding="15,8" Width="120"/>
+        </StackPanel>
+    </Grid>
+</UserControl>
