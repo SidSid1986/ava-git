@@ -9,13 +9,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Folder Include="Models\" />
         <AvaloniaResource Include="Assets\**" />
     </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Avalonia" Version="11.3.6" />
         <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.3.0" />
+        <!-- 移除了 TreeDataGrid 包 -->
         <PackageReference Include="Avalonia.Desktop" Version="11.3.6" />
         <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.6" />
         <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.6" />

@@ -3,7 +3,7 @@
              x:Class="ava_demo_new.Views.OperationPage">
     
     <Grid Background="#F5F5F5">
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="30">
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="20">
             <TextBlock Text="高级拖拽演示" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center"/>
             
             <!-- 控制面板 -->
@@ -19,7 +19,7 @@
             </Border>
             
             <!-- 拖拽区域 -->
-            <Border Background="White" Padding="20" CornerRadius="8" BorderBrush="#DDD" BorderThickness="1"
+            <Border Background="White" Padding="0" CornerRadius="8" BorderBrush="#DDD" BorderThickness="1"
                     Width="400" Height="300" x:Name="DragContainer">
                 
                 <Canvas x:Name="DragCanvas" Background="Transparent">
