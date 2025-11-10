@@ -1,24 +1,21 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:AvaloniaEdit="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
+
         xmlns:vm="using:ava_demo_new.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        
+
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="ava_demo_new.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
         Title="{Binding WindowTitle}"
-        
         Width="1200"
         Height="700"
         MinWidth="800"
         MinHeight="600"
         WindowStartupLocation="CenterScreen"
-        WindowState="Normal"
-    
-        >
+        WindowState="Normal">
 
     <Window.Styles>
         <!-- 引用外部样式文件 -->
@@ -47,9 +44,8 @@
                 <Button Click="homeClick" Classes="MyCustomButton"
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch"
-                        Command="{Binding MyCustomButtonClickCommand}"
-                        >
-                    
+                        Command="{Binding MyCustomButtonClickCommand}">
+
                     <!-- 按钮的内容：可以放图片、文字，或 StackPanel 组合 -->
                     <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
                         <Image Source="/Assets/home.png"
@@ -121,15 +117,16 @@
                             <TextBlock Text="2" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Border>
                         <Border Grid.Column="2" Background="LightSalmon">
-                            <Button   
+                            <Button
                                 BorderThickness="0"
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch"
                                 Classes="MyCustomButton"
                                 Click="treeClick">
-                                <TextBlock Text="Tree" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                <TextBlock Text="Tree" FontSize="10" HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
                             </Button>
-                            
+
                         </Border>
                         <Border Grid.Column="3" Background="MistyRose">
                             <TextBlock Text="4" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" />
@@ -167,12 +164,12 @@
                                        VerticalAlignment="Center" />
                         </Border>
                         <Border Grid.Column="14" Background="LightGoldenrodYellow">
-                            <Button   
-                                    BorderThickness="0"
-                                    HorizontalAlignment="Stretch"
-                                    VerticalAlignment="Stretch"
-                                    Classes="MyCustomButton"
-                                    Click="ShowCustomDialog">
+                            <Button
+                                BorderThickness="0"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                Classes="MyCustomButton"
+                                Click="ShowCustomDialog">
                                 <Image Source="/Assets/home.png"
                                        Width="32"
                                        Height="32"
@@ -219,9 +216,9 @@
 
 
         <!-- ===================== 第二行：剩余 85% 区域（左90% | 右10%） ==================== -->
-        
-      
-              <Grid Grid.Row="1">
+
+
+        <Grid Grid.Row="1">
             <!-- 定义两列：左侧 90% | 右侧 10% -->
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="95*" />  <!-- 左侧占 90% 宽度 -->
@@ -229,7 +226,7 @@
             </Grid.ColumnDefinitions>
 
             <!-- 左侧模块 (90%) -->
-            
+
             <Border Grid.Column="0">
                 <Grid>
                     <!-- 定义三行，高度按比例分配 -->
@@ -240,169 +237,387 @@
                     </Grid.RowDefinitions>
 
 
-                   
                     <!-- ===================== 第一行：85% 高度 → 横向 3 列 (75% | 15% | 10%) ===================== -->
-                    <Grid Grid.Row="0">
-                        <!-- 横向 3 列：宽度比例 75% | 15% | 10% -->
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="85*" />  <!-- 第 1 列：75% -->
-                            <ColumnDefinition Width="5*" />  <!-- 第 2 列：15% -->
-                            <ColumnDefinition Width="5*" />  <!-- 第 3 列：10% -->
-                        </Grid.ColumnDefinitions>
-
-                        <!-- ===================== 第 1 列 (75%)：保持不变（一个整体模块） ===================== -->
-                        <ContentControl   Name="MainContent" Background="White">
-                        <Border Grid.Column="0" Background="LightSkyBlue">
-                            <!-- <TextBlock Text="列 1 (75%)" -->
-                            <!--            HorizontalAlignment="Center" -->
-                            <!--            VerticalAlignment="Center" -->
-                            <!--            FontSize="12" /> -->
-                            <AvaloniaEdit:TextEditor Name="CodeEditor"
-                                                     Text="public"
-                                                     SyntaxHighlighting="C#"
-                                                     ShowLineNumbers="True"
-                                                     FontFamily="Cascadia Code, Consolas, Menlo, Monospace"
-                                                     FontSize="14"
-                                                     Background="white"
-                                                     Foreground="Black"
-                                                     WordWrap="False"
-                                                     HorizontalScrollBarVisibility="Auto"
-                                                     VerticalScrollBarVisibility="Auto" />
-
-                        </Border>
-                        </ContentControl>
-                        <!-- ===================== 第 2 列 (15%)：纵向 6 个模块 ===================== -->
-                        <Grid Grid.Column="1">
-                            <!-- 纵向 6 行，每行等高 -->
+                    <ContentControl Grid.Column="0" Grid.ColumnSpan="3" Name="MainContent" Background="White">
+                        <Grid Margin="10">
+                            <!-- 调整为3行5列，但行高和列宽要更合理分配 -->
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="*" />  <!-- 模块 1 -->
-                                <RowDefinition Height="*" />  <!-- 模块 2 -->
-                                <RowDefinition Height="*" />  <!-- 模块 3 -->
-                                <RowDefinition Height="*" />  <!-- 模块 4 -->
-                                <RowDefinition Height="*" />  <!-- 模块 5 -->
-                                <RowDefinition Height="*" />  <!-- 模块 6 -->
+                                <RowDefinition Height="*" />  <!-- 第一行稍高一些 -->
+                                <RowDefinition Height="*" />     <!-- 第二行 -->
+                                <RowDefinition Height="*" />     <!-- 第三行 -->
                             </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
 
-                            <!-- 6 个模块，从上到下 -->
-                            <!-- <Border Grid.Row="0" Background="LightCyan" PointerPressed="CopyButton_Click"> -->
-                            <!--     <TextBlock Text="复制" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" /> -->
-                            <!-- </Border> -->
-                            <!-- <Border Grid.Row="1" Background="LightGreen" PointerPressed="CutButton_Click"> -->
-                            <!--     <TextBlock Text="剪切" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" /> -->
-                            <!-- </Border> -->
-                            <!-- <Border Grid.Row="2" Background="LightYellow" PointerPressed="PasteButton_Click"> -->
-                            <!--     <TextBlock Text="粘贴" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" /> -->
-                            <!-- </Border> -->
-                            <!-- <Border Grid.Row="3" Background="MistyRose" PointerPressed="DeleteButton_Click"> -->
-                            <!--     <TextBlock Text="删除" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" /> -->
-                            <!-- </Border> -->
-                            <!-- <Border Grid.Row="4" Background="Lavender" PointerPressed="UndoButton_Click"> -->
-                            <!--     <TextBlock Text="撤销" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" /> -->
-                            <!-- </Border> -->
-                            <!-- <Border Grid.Row="5" Background="Honeydew" PointerPressed="RedoButton_Click"> -->
-                            <!--     <TextBlock Text="重做" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" /> -->
-                            <!-- </Border> -->
-
-
-                            <Button Grid.Row="0"
-                                    Classes="OptionButton"
+                            <!-- 第一行 -->
+                            <Button Grid.Row="0" Grid.Column="0"
+                                    Classes="FunctionButton"
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Stretch"
-                                    Click="CopyButton_Click">
-                                <TextBlock Text="复制" FontSize="10" HorizontalAlignment="Center"
-                                           VerticalAlignment="Center" />
+                                    Margin="8"
+                                    Click="codeClick">
+                                <StackPanel Orientation="Vertical" HorizontalAlignment="Center"
+                                            VerticalAlignment="Center">
+                                    <Border BorderBrush="#E0E0E0" BorderThickness="2"
+                                            CornerRadius="8" Background="White"
+                                            Width="80" Height="80"
+                                            Margin="0,0,0,12">      <!-- 增加文字间距 -->
+                                        <Image Source="/Assets/home.png"
+                                               Width="48" Height="48"
+                                               Stretch="Uniform" />
+                                    </Border>
+                                    <TextBlock Text="用户登录"
+                                               FontSize="14"
+                                               FontWeight="SemiBold"
+                                               HorizontalAlignment="Center"
+                                               Foreground="#333333" />
+                                </StackPanel>
                             </Button>
 
-                            <Button Grid.Row="1"
-                                    Classes="OptionButton"
+                            <Button Grid.Row="0" Grid.Column="1"
+                                    Classes="FunctionButton"
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Stretch"
-                                    Click="CutButton_Click">
-                                <TextBlock Text="剪切" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    Margin="8"
+                                    Click="codeClick">
+                                <StackPanel Orientation="Vertical" HorizontalAlignment="Center"
+                                            VerticalAlignment="Center">
+                                    <Border BorderBrush="#E0E0E0" BorderThickness="2"
+                                            CornerRadius="8" Background="White"
+                                            Width="80" Height="80"
+                                            Margin="0,0,0,12">
+                                        <Image Source="/Assets/home.png"
+                                               Width="48" Height="48"
+                                               Stretch="Uniform" />
+                                    </Border>
+                                    <TextBlock Text="工程管理"
+                                               FontSize="14"
+                                               FontWeight="SemiBold"
+                                               HorizontalAlignment="Center"
+                                               Foreground="#333333" />
+                                </StackPanel>
                             </Button>
 
-                            <Button Grid.Row="2"
-                                    Classes="OptionButton"
-
-
+                            <Button Grid.Row="0" Grid.Column="2"
+                                    Classes="FunctionButton"
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Stretch"
-                                    Click="PasteButton_Click">
-                                <TextBlock Text="粘贴" FontSize="10" HorizontalAlignment="Center"
-                                           VerticalAlignment="Center" />
+                                    Margin="8"
+                                    Click="codeClick">
+                                <StackPanel Orientation="Vertical" HorizontalAlignment="Center"
+                                            VerticalAlignment="Center">
+                                    <Border BorderBrush="#E0E0E0" BorderThickness="2"
+                                            CornerRadius="8" Background="White"
+                                            Width="80" Height="80"
+                                            Margin="0,0,0,12">
+                                        <Image Source="/Assets/home.png"
+                                               Width="48" Height="48"
+                                               Stretch="Uniform" />
+                                    </Border>
+                                    <TextBlock Text="程序编辑"
+                                               FontSize="14"
+                                               FontWeight="SemiBold"
+                                               HorizontalAlignment="Center"
+                                               Foreground="#333333" />
+                                </StackPanel>
                             </Button>
 
-                            <Button Grid.Row="3"
-                                    Classes="OptionButton"
-
-
+                            <Button Grid.Row="0" Grid.Column="3"
+                                    Classes="FunctionButton"
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Stretch"
-                                    Click="DeleteButton_Click">
-                                <TextBlock Text="删除" FontSize="10" HorizontalAlignment="Center"
-                                           VerticalAlignment="Center" />
+                                    Margin="8"
+                                    Click="codeClick">
+                                <StackPanel Orientation="Vertical" HorizontalAlignment="Center"
+                                            VerticalAlignment="Center">
+                                    <Border BorderBrush="#E0E0E0" BorderThickness="2"
+                                            CornerRadius="8" Background="White"
+                                            Width="80" Height="80"
+                                            Margin="0,0,0,12">
+                                        <Image Source="/Assets/home.png"
+                                               Width="48" Height="48"
+                                               Stretch="Uniform" />
+                                    </Border>
+                                    <TextBlock Text="程序数据"
+                                               FontSize="14"
+                                               FontWeight="SemiBold"
+                                               HorizontalAlignment="Center"
+                                               Foreground="#333333" />
+                                </StackPanel>
                             </Button>
 
-                            <Button Grid.Row="4"
-                                    Classes="OptionButton"
-
-
+                            <Button Grid.Row="0" Grid.Column="4"
+                                    Classes="FunctionButton"
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Stretch"
-                                    Click="UndoButton_Click">
-                                <TextBlock Text="撤销" FontSize="10" HorizontalAlignment="Center"
-                                           VerticalAlignment="Center" />
+                                    Margin="8"
+                                    Click="codeClick">
+                                <StackPanel Orientation="Vertical" HorizontalAlignment="Center"
+                                            VerticalAlignment="Center">
+                                    <Border BorderBrush="#E0E0E0" BorderThickness="2"
+                                            CornerRadius="8" Background="White"
+                                            Width="80" Height="80"
+                                            Margin="0,0,0,12">
+                                        <Image Source="/Assets/home.png"
+                                               Width="48" Height="48"
+                                               Stretch="Uniform" />
+                                    </Border>
+                                    <TextBlock Text="IO检测"
+                                               FontSize="14"
+                                               FontWeight="SemiBold"
+                                               HorizontalAlignment="Center"
+                                               Foreground="#333333" />
+                                </StackPanel>
                             </Button>
 
-                            <Button Grid.Row="5"
-                                    Classes="OptionButton"
-
-
+                            <!-- 第二行 -->
+                            <Button Grid.Row="1" Grid.Column="0"
+                                    Classes="FunctionButton"
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Stretch"
-                                    Click="RedoButton_Click">
-                                <TextBlock Text="重做" FontSize="10" HorizontalAlignment="Center"
-                                           VerticalAlignment="Center" />
+                                    Margin="8"
+                                    Click="codeClick">
+                                <StackPanel Orientation="Vertical" HorizontalAlignment="Center"
+                                            VerticalAlignment="Center">
+                                    <Border BorderBrush="#E0E0E0" BorderThickness="2"
+                                            CornerRadius="8" Background="White"
+                                            Width="80" Height="80"
+                                            Margin="0,0,0,12">
+                                        <Image Source="/Assets/home.png"
+                                               Width="48" Height="48"
+                                               Stretch="Uniform" />
+                                    </Border>
+                                    <TextBlock Text="点动管理"
+                                               FontSize="14"
+                                               FontWeight="SemiBold"
+                                               HorizontalAlignment="Center"
+                                               Foreground="#333333" />
+                                </StackPanel>
+                            </Button>
+
+                            <Button Grid.Row="1" Grid.Column="1"
+                                    Classes="FunctionButton"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    Margin="8"
+                                    Click="codeClick">
+                                <StackPanel Orientation="Vertical" HorizontalAlignment="Center"
+                                            VerticalAlignment="Center">
+                                    <Border BorderBrush="#E0E0E0" BorderThickness="2"
+                                            CornerRadius="8" Background="White"
+                                            Width="80" Height="80"
+                                            Margin="0,0,0,12">
+                                        <Image Source="/Assets/home.png"
+                                               Width="48" Height="48"
+                                               Stretch="Uniform" />
+                                    </Border>
+                                    <TextBlock Text="日志管理"
+                                               FontSize="14"
+                                               FontWeight="SemiBold"
+                                               HorizontalAlignment="Center"
+                                               Foreground="#333333" />
+                                </StackPanel>
+                            </Button>
+
+                            <Button Grid.Row="1" Grid.Column="2"
+                                    Classes="FunctionButton"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    Margin="8"
+                                    Click="codeClick">
+                                <StackPanel Orientation="Vertical" HorizontalAlignment="Center"
+                                            VerticalAlignment="Center">
+                                    <Border BorderBrush="#E0E0E0" BorderThickness="2"
+                                            CornerRadius="8" Background="White"
+                                            Width="80" Height="80"
+                                            Margin="0,0,0,12">
+                                        <Image Source="/Assets/home.png"
+                                               Width="48" Height="48"
+                                               Stretch="Uniform" />
+                                    </Border>
+                                    <TextBlock Text="通用设置"
+                                               FontSize="14"
+                                               FontWeight="SemiBold"
+                                               HorizontalAlignment="Center"
+                                               Foreground="#333333" />
+                                </StackPanel>
+                            </Button>
+
+                            <Button Grid.Row="1" Grid.Column="3"
+                                    Classes="FunctionButton"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    Margin="8"
+                                    Click="codeClick">
+                                <StackPanel Orientation="Vertical" HorizontalAlignment="Center"
+                                            VerticalAlignment="Center">
+                                    <Border BorderBrush="#E0E0E0" BorderThickness="2"
+                                            CornerRadius="8" Background="White"
+                                            Width="80" Height="80"
+                                            Margin="0,0,0,12">
+                                        <Image Source="/Assets/home.png"
+                                               Width="48" Height="48"
+                                               Stretch="Uniform" />
+                                    </Border>
+                                    <TextBlock Text="高级设置"
+                                               FontSize="14"
+                                               FontWeight="SemiBold"
+                                               HorizontalAlignment="Center"
+                                               Foreground="#333333" />
+                                </StackPanel>
+                            </Button>
+
+                            <Button Grid.Row="1" Grid.Column="4"
+                                    Classes="FunctionButton"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    Margin="8"
+                                    Click="codeClick">
+                                <StackPanel Orientation="Vertical" HorizontalAlignment="Center"
+                                            VerticalAlignment="Center">
+                                    <Border BorderBrush="#E0E0E0" BorderThickness="2"
+                                            CornerRadius="8" Background="White"
+                                            Width="80" Height="80"
+                                            Margin="0,0,0,12">
+                                        <Image Source="/Assets/home.png"
+                                               Width="48" Height="48"
+                                               Stretch="Uniform" />
+                                    </Border>
+                                    <TextBlock Text="用户应用"
+                                               FontSize="14"
+                                               FontWeight="SemiBold"
+                                               HorizontalAlignment="Center"
+                                               Foreground="#333333" />
+                                </StackPanel>
+                            </Button>
+
+                            <!-- 第三行 -->
+                            <Button Grid.Row="2" Grid.Column="0"
+                                    Classes="FunctionButton"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    Margin="8"
+                                    Click="codeClick">
+                                <StackPanel Orientation="Vertical" HorizontalAlignment="Center"
+                                            VerticalAlignment="Center">
+                                    <Border BorderBrush="#E0E0E0" BorderThickness="2"
+                                            CornerRadius="8" Background="White"
+                                            Width="80" Height="80"
+                                            Margin="0,0,0,12">
+                                        <Image Source="/Assets/home.png"
+                                               Width="48" Height="48"
+                                               Stretch="Uniform" />
+                                    </Border>
+                                    <TextBlock Text="机器人点位"
+                                               FontSize="14"
+                                               FontWeight="SemiBold"
+                                               HorizontalAlignment="Center"
+                                               Foreground="#333333" />
+                                </StackPanel>
+                            </Button>
+
+                            <Button Grid.Row="2" Grid.Column="1"
+                                    Classes="FunctionButton"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    Margin="8"
+                                    Click="codeClick">
+                                <StackPanel Orientation="Vertical" HorizontalAlignment="Center"
+                                            VerticalAlignment="Center">
+                                    <Border BorderBrush="#E0E0E0" BorderThickness="2"
+                                            CornerRadius="8" Background="White"
+                                            Width="80" Height="80"
+                                            Margin="0,0,0,12">
+                                        <Image Source="/Assets/home.png"
+                                               Width="48" Height="48"
+                                               Stretch="Uniform" />
+                                    </Border>
+                                    <TextBlock Text="用户坐标系"
+                                               FontSize="14"
+                                               FontWeight="SemiBold"
+                                               HorizontalAlignment="Center"
+                                               Foreground="#333333" />
+                                </StackPanel>
+                            </Button>
+
+                            <Button Grid.Row="2" Grid.Column="2"
+                                    Classes="FunctionButton"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    Margin="8"
+                                    Click="codeClick">
+                                <StackPanel Orientation="Vertical" HorizontalAlignment="Center"
+                                            VerticalAlignment="Center">
+                                    <Border BorderBrush="#E0E0E0" BorderThickness="2"
+                                            CornerRadius="8" Background="White"
+                                            Width="80" Height="80"
+                                            Margin="0,0,0,12">
+                                        <Image Source="/Assets/home.png"
+                                               Width="48" Height="48"
+                                               Stretch="Uniform" />
+                                    </Border>
+                                    <TextBlock Text="工具坐标系"
+                                               FontSize="14"
+                                               FontWeight="SemiBold"
+                                               HorizontalAlignment="Center"
+                                               Foreground="#333333" />
+                                </StackPanel>
+                            </Button>
+
+                            <Button Grid.Row="2" Grid.Column="3"
+                                    Classes="FunctionButton"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    Margin="8"
+                                    Click="codeClick">
+                                <StackPanel Orientation="Vertical" HorizontalAlignment="Center"
+                                            VerticalAlignment="Center">
+                                    <Border BorderBrush="#E0E0E0" BorderThickness="2"
+                                            CornerRadius="8" Background="White"
+                                            Width="80" Height="80"
+                                            Margin="0,0,0,12">
+                                        <Image Source="/Assets/home.png"
+                                               Width="48" Height="48"
+                                               Stretch="Uniform" />
+                                    </Border>
+                                    <TextBlock Text="状态监视"
+                                               FontSize="14"
+                                               FontWeight="SemiBold"
+                                               HorizontalAlignment="Center"
+                                               Foreground="#333333" />
+                                </StackPanel>
+                            </Button>
+
+                            <Button Grid.Row="2" Grid.Column="4"
+                                    Classes="FunctionButton"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    Margin="8"
+                                    Click="codeClick">
+                                <StackPanel Orientation="Vertical" HorizontalAlignment="Center"
+                                            VerticalAlignment="Center">
+                                    <Border BorderBrush="#E0E0E0" BorderThickness="2"
+                                            CornerRadius="8" Background="White"
+                                            Width="80" Height="80"
+                                            Margin="0,0,0,12">
+                                        <Image Source="/Assets/home.png"
+                                               Width="48" Height="48"
+                                               Stretch="Uniform" />
+                                    </Border>
+                                    <TextBlock Text="用户界面"
+                                               FontSize="14"
+                                               FontWeight="SemiBold"
+                                               HorizontalAlignment="Center"
+                                               Foreground="#333333" />
+                                </StackPanel>
                             </Button>
                         </Grid>
-
-                        <!-- ===================== 第 3 列 (10%)：视觉 5 个模块（实际 6 高度，第5个占2份） ===================== -->
-                        <Grid Grid.Column="2">
-                            <!-- 纵向 6 行，但第 5 行占 2 份高度，其余各占 1 份 -->
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="*" />  <!-- 模块 1 -->
-                                <RowDefinition Height="*" />  <!-- 模块 2 -->
-                                <RowDefinition Height="*" />  <!-- 模块 3 -->
-                                <RowDefinition Height="*" />  <!-- 模块 4 -->
-                                <RowDefinition Height="2*" /> <!-- 模块 5（合并原第5+6，占2份，看起来是第5个） -->
-                                <!-- 注意：没有第6行，因为第5已经占了2份，总共是 1+1+1+1+2 = 6 份 -->
-                            </Grid.RowDefinitions>
-
-                            <!-- 5 个模块（视觉上） -->
-                            <Border Grid.Row="0" Background="LightPink">
-                                <TextBlock Text="3-1" FontSize="10" HorizontalAlignment="Center"
-                                           VerticalAlignment="Center" />
-                            </Border>
-                            <Border Grid.Row="1" Background="Khaki">
-                                <TextBlock Text="3-2" FontSize="10" HorizontalAlignment="Center"
-                                           VerticalAlignment="Center" />
-                            </Border>
-                            <Border Grid.Row="2" Background="Plum">
-                                <TextBlock Text="3-3" FontSize="10" HorizontalAlignment="Center"
-                                           VerticalAlignment="Center" />
-                            </Border>
-                            <Border Grid.Row="3" Background="Tan">
-                                <TextBlock Text="3-4" FontSize="10" HorizontalAlignment="Center"
-                                           VerticalAlignment="Center" />
-                            </Border>
-                            <Border Grid.Row="4" Background="LightGoldenrodYellow">
-                                <TextBlock Text="3-5（合并3-5+3-6）" FontSize="10" HorizontalAlignment="Center"
-                                           VerticalAlignment="Center" />
-                            </Border>
-                            <!-- 没有第6个 Border，因为第5个已经是 2 份高度，总共 6 份 -->
-                        </Grid>
-                    </Grid>
-
+                    </ContentControl>
                     <!-- ===================== 第二行：5% 高度 → 横向 3 个模块 ===================== -->
                     <Grid Grid.Row="1">
                         <!-- 横向 3 列，等宽 -->
@@ -472,7 +687,7 @@
                     </Grid>
                 </Grid>
             </Border>
-         
+
 
             <!-- 右侧模块 (5%) -->
             <Border Grid.Column="1" Background="Transparent">  <!-- 外层透明或不设置，由内部Grid控制 -->
@@ -532,8 +747,7 @@
                 </Grid>
             </Border>
         </Grid>
-    
-      
+
 
     </Grid>
 

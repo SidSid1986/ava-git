@@ -40,8 +40,7 @@ namespace ava_demo_new.Views
                 // 更新 UI
                 UpdateTreeView();
 
-                // 隐藏加载状态
-                HideLoadingState();
+                
             }
             catch (System.Exception ex)
             {
@@ -99,39 +98,44 @@ namespace ava_demo_new.Views
         // 加载状态相关方法
         private void ShowLoadingState()
         {
-            // 这里可以显示加载动画或禁用按钮
-            // 例如：显示加载中文字
-            var loadingText = new TextBlock
+            // 清空当前内容，显示加载中文字
+            DeviceTreeView.Items.Clear();
+    
+            var loadingItem = new TreeViewItem
             {
-                Text = "加载中...",
-                FontSize = 16,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center
+                Header = new TextBlock
+                {
+                    Text = "加载中...",
+                    FontSize = 16,
+                    // FontStyle = FontStyle.Italic,
+                    Foreground = new SolidColorBrush(Colors.Gray),
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center
+                }
             };
-            
-            // 如果需要在 TreeView 区域显示加载状态，可以在这里添加
+    
+            DeviceTreeView.Items.Add(loadingItem);
         }
 
-        private void HideLoadingState()
-        {
-            // 隐藏加载状态
-            // 例如：移除加载中文字
-        }
-
+        
         private void ShowErrorState(string message)
         {
-            // 显示错误信息
-            // 例如：在界面某个位置显示错误信息
-            var errorText = new TextBlock
+            // 清空当前内容，显示错误信息
+            DeviceTreeView.Items.Clear();
+    
+            var errorItem = new TreeViewItem
             {
-                Text = message,
-                FontSize = 14,
-                Foreground = new SolidColorBrush(Colors.Red),
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center
+                Header = new TextBlock
+                {
+                    Text = $"加载失败: {message}",
+                    FontSize = 14,
+                    Foreground = new SolidColorBrush(Colors.Red),
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center
+                }
             };
-            
-            // 可以添加到界面或使用对话框显示
+    
+            DeviceTreeView.Items.Add(errorItem);
         }
 
         private StackPanel CreateHeaderContent(string text, string color)

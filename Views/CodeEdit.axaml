@@ -1,0 +1,174 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:AvaloniaEdit="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ava_demo_new.Views.CodeEdit">
+<Grid>
+                        <!-- 横向 3 列：宽度比例 75% | 15% | 10% -->
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="85*" />  <!-- 第 1 列：75% -->
+                            <ColumnDefinition Width="5*" />  <!-- 第 2 列：15% -->
+                            <ColumnDefinition Width="5*" />  <!-- 第 3 列：10% -->
+                        </Grid.ColumnDefinitions>
+
+                        <!-- ===================== 第 1 列 (75%)：保持不变（一个整体模块） ===================== -->
+                     
+                        <Border Grid.Column="0" Background="LightSkyBlue">
+                            <!-- <TextBlock Text="列 1 (75%)" -->
+                            <!--            HorizontalAlignment="Center" -->
+                            <!--            VerticalAlignment="Center" -->
+                            <!--            FontSize="12" /> -->
+                            <AvaloniaEdit:TextEditor Name="CodeEditor"
+                                                     Text="public"
+                                                     SyntaxHighlighting="C#"
+                                                     ShowLineNumbers="True"
+                                                     FontFamily="Cascadia Code, Consolas, Menlo, Monospace"
+                                                     FontSize="14"
+                                                     Background="white"
+                                                     Foreground="Black"
+                                                     WordWrap="False"
+                                                     HorizontalScrollBarVisibility="Auto"
+                                                     VerticalScrollBarVisibility="Auto" />
+
+                        </Border>
+                       
+                        <!-- ===================== 第 2 列 (15%)：纵向 6 个模块 ===================== -->
+                        <Grid Grid.Column="1">
+                            <!-- 纵向 6 行，每行等高 -->
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />  <!-- 模块 1 -->
+                                <RowDefinition Height="*" />  <!-- 模块 2 -->
+                                <RowDefinition Height="*" />  <!-- 模块 3 -->
+                                <RowDefinition Height="*" />  <!-- 模块 4 -->
+                                <RowDefinition Height="*" />  <!-- 模块 5 -->
+                                <RowDefinition Height="*" />  <!-- 模块 6 -->
+                            </Grid.RowDefinitions>
+
+                            <!-- 6 个模块，从上到下 -->
+                            <!-- <Border Grid.Row="0" Background="LightCyan" PointerPressed="CopyButton_Click"> -->
+                            <!--     <TextBlock Text="复制" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" /> -->
+                            <!-- </Border> -->
+                            <!-- <Border Grid.Row="1" Background="LightGreen" PointerPressed="CutButton_Click"> -->
+                            <!--     <TextBlock Text="剪切" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" /> -->
+                            <!-- </Border> -->
+                            <!-- <Border Grid.Row="2" Background="LightYellow" PointerPressed="PasteButton_Click"> -->
+                            <!--     <TextBlock Text="粘贴" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" /> -->
+                            <!-- </Border> -->
+                            <!-- <Border Grid.Row="3" Background="MistyRose" PointerPressed="DeleteButton_Click"> -->
+                            <!--     <TextBlock Text="删除" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" /> -->
+                            <!-- </Border> -->
+                            <!-- <Border Grid.Row="4" Background="Lavender" PointerPressed="UndoButton_Click"> -->
+                            <!--     <TextBlock Text="撤销" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" /> -->
+                            <!-- </Border> -->
+                            <!-- <Border Grid.Row="5" Background="Honeydew" PointerPressed="RedoButton_Click"> -->
+                            <!--     <TextBlock Text="重做" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" /> -->
+                            <!-- </Border> -->
+
+
+                            <Button Grid.Row="0"
+                                    Classes="OptionButton"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    Click="CopyButton_Click">
+                                <TextBlock Text="复制" FontSize="10" HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                            </Button>
+
+                            <Button Grid.Row="1"
+                                    Classes="OptionButton"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    Click="CutButton_Click">
+                                <TextBlock Text="剪切" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Button>
+
+                            <Button Grid.Row="2"
+                                    Classes="OptionButton"
+
+
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    Click="PasteButton_Click">
+                                <TextBlock Text="粘贴" FontSize="10" HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                            </Button>
+
+                            <Button Grid.Row="3"
+                                    Classes="OptionButton"
+
+
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    Click="DeleteButton_Click">
+                                <TextBlock Text="删除" FontSize="10" HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                            </Button>
+
+                            <Button Grid.Row="4"
+                                    Classes="OptionButton"
+
+
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    Click="UndoButton_Click">
+                                <TextBlock Text="撤销" FontSize="10" HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                            </Button>
+
+                            <Button Grid.Row="5"
+                                    Classes="OptionButton"
+
+
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    Click="RedoButton_Click">
+                                <TextBlock Text="重做" FontSize="10" HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                            </Button>
+                        </Grid>
+
+                        <!-- ===================== 第 3 列 (10%)：视觉 5 个模块（实际 6 高度，第5个占2份） ===================== -->
+                        <Grid Grid.Column="2">
+                            <!-- 纵向 6 行，但第 5 行占 2 份高度，其余各占 1 份 -->
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />  <!-- 模块 1 -->
+                                <RowDefinition Height="*" />  <!-- 模块 2 -->
+                                <RowDefinition Height="*" />  <!-- 模块 3 -->
+                                <RowDefinition Height="*" />  <!-- 模块 4 -->
+                                <RowDefinition Height="2*" /> <!-- 模块 5（合并原第5+6，占2份，看起来是第5个） -->
+                                <!-- 注意：没有第6行，因为第5已经占了2份，总共是 1+1+1+1+2 = 6 份 -->
+                            </Grid.RowDefinitions>
+
+                            <!-- 5 个模块（视觉上） -->
+                            <Border Grid.Row="0" Background="LightPink">
+                                <TextBlock Text="3-1" FontSize="10" HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                            </Border>
+                            <Border Grid.Row="1" Background="Khaki">
+                                <TextBlock Text="3-2" FontSize="10" HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                            </Border>
+                            <Border Grid.Row="2" Background="Plum">
+                                <TextBlock Text="3-3" FontSize="10" HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                            </Border>
+                            <Border Grid.Row="3" Background="Tan">
+                                <TextBlock Text="3-4" FontSize="10" HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                            </Border>
+                            <Border Grid.Row="4" Background="LightGoldenrodYellow">
+                                <TextBlock Text="3-5（合并3-5+3-6）" FontSize="10" HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                            </Border>
+                            <!-- 没有第6个 Border，因为第5个已经是 2 份高度，总共 6 份 -->
+                        </Grid>
+                  
+                        
+                    </Grid>
+    
+    
+    
+    
+</UserControl>
