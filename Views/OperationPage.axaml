@@ -1,66 +1,182 @@
 ﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="ava_demo_new.Views.OperationPage">
-    
+
     <Grid Background="#F5F5F5">
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="20">
-            <TextBlock Text="高级拖拽演示" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center"/>
-            
+            <TextBlock Text="拖拽" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" />
+
             <!-- 控制面板 -->
-            <Border Background="White" Padding="15" CornerRadius="8" BorderBrush="#DDD" BorderThickness="1">
+            <Border Background="White" Padding="15" CornerRadius="0" BorderBrush="#DDD" BorderThickness="1">
                 <StackPanel Spacing="10" Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Button Content="撤销" Click="UndoButton_Click" Background="#6C757D" Foreground="White" Padding="10,5"/>
-                    <Button Content="重做" Click="RedoButton_Click" Background="#6C757D" Foreground="White" Padding="10,5"/>
-                    <Button Content="网格吸附" Click="ToggleGridButton_Click" Background="#17A2B8" Foreground="White" Padding="10,5"/>
-                    <Button Content="碰撞检测" Click="ToggleCollisionButton_Click" Background="#DC3545" Foreground="White" Padding="10,5"/>
-                    <Button Content="保存布局" Click="SaveLayoutButton_Click" Background="#28A745" Foreground="White" Padding="10,5"/>
-                    <Button Content="重置布局" Click="ResetLayoutButton_Click" Background="#FFC107" Foreground="Black" Padding="10,5"/>
+                    <Button Content="撤销" Click="UndoButton_Click" Background="#6C757D" Foreground="White"
+                            Padding="10,5" />
+                    <Button Content="重做" Click="RedoButton_Click" Background="#6C757D" Foreground="White"
+                            Padding="10,5" />
+                    <Button Content="网格吸附" Click="ToggleGridButton_Click" Background="#17A2B8" Foreground="White"
+                            Padding="10,5" />
+                    <Button Content="碰撞检测" Click="ToggleCollisionButton_Click" Background="#DC3545" Foreground="White"
+                            Padding="10,5" />
+                    <Button Content="保存布局" Click="SaveLayoutButton_Click" Background="#28A745" Foreground="White"
+                            Padding="10,5" />
+                    <Button Content="重置布局" Click="ResetLayoutButton_Click" Background="#FFC107" Foreground="Black"
+                            Padding="10,5" />
                 </StackPanel>
             </Border>
-            
-            <!-- 拖拽区域 -->
-            <Border Background="White" Padding="0" CornerRadius="8" BorderBrush="#DDD" BorderThickness="1"
-                    Width="400" Height="300" x:Name="DragContainer">
-                
-                <Canvas x:Name="DragCanvas" Background="Transparent">
-                    <Canvas.Styles>
-                        <!-- 碰撞时的样式 -->
-                        <Style Selector="Border.colliding">
-                            <Setter Property="BorderBrush" Value="Red"/>
-                            <Setter Property="BorderThickness" Value="3"/>
-                        </Style>
-                    </Canvas.Styles>
-                    
-                    <!-- 可拖拽的方块1 -->
-                    <Border Width="60" Height="60" Background="#007ACC" CornerRadius="5"
-                            Canvas.Left="50" Canvas.Top="50" x:Name="Block1"
-                            Cursor="SizeAll">
-                        <TextBlock Text="1" Foreground="White" FontSize="16" 
-                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Border>
-                    
-                    <!-- 可拖拽的方块2 -->
-                    <Border Width="60" Height="60" Background="#28A745" CornerRadius="5"
-                            Canvas.Left="150" Canvas.Top="50" x:Name="Block2"
-                            Cursor="SizeAll">
-                        <TextBlock Text="2" Foreground="White" FontSize="16" 
-                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Border>
-                    
-                    <!-- 可拖拽的方块3 -->
-                    <Border Width="60" Height="60" Background="#DC3545" CornerRadius="5"
-                            Canvas.Left="250" Canvas.Top="50" x:Name="Block3"
-                            Cursor="SizeAll">
-                        <TextBlock Text="3" Foreground="White" FontSize="16" 
-                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Border>
-                    
-                </Canvas>
+
+            <!-- 新增：工件布局配置 -->
+            <Border Background="White" Padding="15" CornerRadius="0" BorderBrush="#DDD" BorderThickness="1">
+                <StackPanel Spacing="10" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <!-- X轴工件数 -->
+                    <StackPanel Spacing="5" Orientation="Vertical">
+                        <TextBlock Text="X轴工件数" FontSize="10" Foreground="Black" HorizontalAlignment="Center"/>
+                        <TextBox x:Name="XWorkpieceCount" Width="60" Height="25" FontSize="12" 
+                                 Text="1" TextAlignment="Center"/>
+                    </StackPanel>
+
+                    <!-- Y轴工件数 -->
+                    <StackPanel Spacing="5" Orientation="Vertical">
+                        <TextBlock Text="Y轴工件数" FontSize="10" Foreground="Black" HorizontalAlignment="Center"/>
+                        <TextBox x:Name="YWorkpieceCount" Width="60" Height="25" FontSize="12" 
+                                 Text="1" TextAlignment="Center"/>
+                    </StackPanel>
+
+                    <!-- X方向边距 -->
+                    <StackPanel Spacing="5" Orientation="Vertical">
+                        <TextBlock Text="X方向边距" FontSize="10" Foreground="Black" HorizontalAlignment="Center"/>
+                        <TextBox x:Name="XMargin" Width="60" Height="25" FontSize="12" 
+                                 Text="10" TextAlignment="Center"/>
+                    </StackPanel>
+
+                    <!-- Y方向边距 -->
+                    <StackPanel Spacing="5" Orientation="Vertical">
+                        <TextBlock Text="Y方向边距" FontSize="10" Foreground="Black" HorizontalAlignment="Center"/>
+                        <TextBox x:Name="YMargin" Width="60" Height="25" FontSize="12" 
+                                 Text="10" TextAlignment="Center"/>
+                    </StackPanel>
+
+                    <!-- 添加按钮 -->
+                    <Button Content="添加" Click="AddWorkpiecesButton_Click" Background="#007ACC" Foreground="White"
+                            Padding="15,5" Margin="20,0,0,0" VerticalAlignment="Bottom"/>
+                </StackPanel>
             </Border>
-            
-            <Button Content="返回主页" Click="BackButton_Click" 
-                    Background="#6C757D" Foreground="White" 
-                    Padding="15,8" Width="120"/>
+
+            <!-- 整个拖拽区域容器 -->
+            <Grid Width="410" Height="310">
+                <!-- X轴（左边竖向模块） -->
+                <Border Width="10"
+                        Height="310"
+                        Background="Pink"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Margin="0,0,0,0">
+                    <Grid>
+                        <!-- 顶部：0 -->
+                        <TextBlock Text="0" FontSize="8" Foreground="Black"
+                                   HorizontalAlignment="Center" VerticalAlignment="Top"
+                                   Margin="0,20,0,0">
+                            <TextBlock.RenderTransform>
+                                <RotateTransform Angle="90" />
+                            </TextBlock.RenderTransform>
+                        </TextBlock>
+
+                        <!-- 中间：X(mm) - 向右旋转90度 -->
+                        <TextBlock Width="50"
+                                   Text="X(mm)" FontSize="8" Foreground="Black"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock.RenderTransform>
+                                <RotateTransform Angle="90" />
+                            </TextBlock.RenderTransform>
+                        </TextBlock>
+
+                        <!-- 底部：300 -->
+                        <TextBlock Text="300"
+                                   Width="50"
+                                   FontSize="8" Foreground="Black"
+                                   HorizontalAlignment="Center" VerticalAlignment="Bottom"
+                                   Margin="0,0,0,2">
+                            <TextBlock.RenderTransform>
+                                <RotateTransform Angle="90" />
+                            </TextBlock.RenderTransform>
+                        </TextBlock>
+                    </Grid>
+                </Border>
+
+                <!-- Y轴（上方横向模块） -->
+                <Border Height="10"
+                        Width="400"
+                        Background="Pink"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Margin="10,0,0,0">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- 左边：0 -->
+                        <TextBlock Width="50"
+                                   Grid.Column="0" Text="0" FontSize="8" Foreground="Black"
+                                   HorizontalAlignment="Left" VerticalAlignment="Center"
+                                   Margin="15,0,0,0" />
+
+                        <!-- 中间：Y(mm) -->
+                        <TextBlock Grid.Column="1" Text="Y(mm)" FontSize="8" Foreground="Black"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+
+                        <!-- 右边：400 -->
+                        <TextBlock Grid.Column="2" Text="400" FontSize="8" Foreground="Black"
+                                   HorizontalAlignment="Right" VerticalAlignment="Center"
+                                   Margin="0,0,2,0" />
+                    </Grid>
+                </Border>
+
+                <!-- 原有的拖拽区域 Border -->
+                <Border Background="White" Padding="0" CornerRadius="0" BorderBrush="Yellow" BorderThickness="1"
+                        Width="400" Height="300" x:Name="DragContainer"
+                        HorizontalAlignment="Left" VerticalAlignment="Top"
+                        Margin="10,10,0,0">
+                    <Canvas x:Name="DragCanvas" Background="Transparent"
+                            Width="400" Height="300">
+                        <Canvas.Styles>
+                            <!-- 碰撞时的样式 -->
+                            <Style Selector="Border.colliding">
+                                <Setter Property="BorderBrush" Value="Red" />
+                                <Setter Property="BorderThickness" Value="3" />
+                            </Style>
+                        </Canvas.Styles>
+
+                        <!-- 可拖拽的方块1 -->
+                        <Border Width="60" Height="60" Background="#007ACC" CornerRadius="0"
+                                Canvas.Left="50" Canvas.Top="50" x:Name="Block1"
+                                Cursor="SizeAll">
+                            <TextBlock Text="1" Foreground="White" FontSize="16"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+
+                        <!-- 可拖拽的方块2 -->
+                        <Border Width="60" Height="60" Background="#28A745" CornerRadius="0"
+                                Canvas.Left="150" Canvas.Top="50" x:Name="Block2"
+                                Cursor="SizeAll">
+                            <TextBlock Text="2" Foreground="White" FontSize="16"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+
+                        <!-- 可拖拽的方块3 -->
+                        <Border Width="60" Height="60" Background="#DC3545" CornerRadius="0"
+                                Canvas.Left="250" Canvas.Top="50" x:Name="Block3"
+                                Cursor="SizeAll">
+                            <TextBlock Text="3" Foreground="White" FontSize="16"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                    </Canvas>
+                </Border>
+            </Grid>
+            <Button Content="返回主页" Click="BackButton_Click"
+                    Background="#6C757D" Foreground="White"
+                    Padding="15,8" Width="120" />
         </StackPanel>
     </Grid>
 </UserControl>
