@@ -64,6 +64,22 @@ public partial class MainWindow : Window
         MainContent.Content = codeEdit;
     }
     
+    
+    private void settingClick(object? sender, RoutedEventArgs e)
+    {
+        Console.WriteLine("settingClick - 跳转到设置页面");
+    
+        // 创建code页面
+        var settingPage = new SettingPage();
+    
+        // 告诉code页面原始内容，用于返回
+        settingPage.OriginalContent = _originalContent;
+    
+        // 显示code页面
+        MainContent.Content = settingPage;
+    }
+    
+    
     // 添加 pcClick 事件处理方法
     private bool isClicked = false;  // 状态变量
     private void PcClick(object? sender, RoutedEventArgs e)

@@ -19,16 +19,16 @@
             <!-- 工件布局配置 -->
             <Border Background="White" Padding="15" CornerRadius="0" BorderBrush="#DDD" BorderThickness="1">
                 <StackPanel Spacing="10" Orientation="Horizontal" HorizontalAlignment="Center">
-                    <!-- X轴工件数 -->
+                    <!-- Y轴工件数 -->
                     <StackPanel Spacing="5" Orientation="Vertical">
-                        <TextBlock Text="X轴工件数" FontSize="10" Foreground="Black" HorizontalAlignment="Center"/>
+                        <TextBlock Text="Y轴工件数" FontSize="10" Foreground="Black" HorizontalAlignment="Center"/>
                         <TextBox x:Name="XWorkpieceCount" Width="60" Height="25" FontSize="12" 
                                  Text="0" TextAlignment="Center" TextChanged="OnWorkpieceCountTextChanged"/>
                     </StackPanel>
 
-                    <!-- Y轴工件数 -->
+                    <!-- X轴工件数 -->
                     <StackPanel Spacing="5" Orientation="Vertical">
-                        <TextBlock Text="Y轴工件数" FontSize="10" Foreground="Black" HorizontalAlignment="Center"/>
+                        <TextBlock Text="X轴工件数" FontSize="10" Foreground="Black" HorizontalAlignment="Center"/>
                         <TextBox x:Name="YWorkpieceCount" Width="60" Height="25" FontSize="12" 
                                  Text="0" TextAlignment="Center" TextChanged="OnWorkpieceCountTextChanged"/>
                     </StackPanel>
@@ -54,9 +54,9 @@
             </Border>
 
             <!-- 拖拽区域容器 -->
-            <Grid Width="410" Height="310">
+            <Grid x:Name="MainContainerGrid">
                 <!-- X轴坐标 -->
-                <Border Width="10" Height="310" Background="Pink" HorizontalAlignment="Left" VerticalAlignment="Top">
+                <Border x:Name="XAxisBorder" Width="10" Background="Pink" HorizontalAlignment="Left" VerticalAlignment="Top">
                     <Grid>
                         <TextBlock Text="0" FontSize="8" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,20,0,0">
                             <TextBlock.RenderTransform><RotateTransform Angle="90"/></TextBlock.RenderTransform>
@@ -64,14 +64,14 @@
                         <TextBlock Width="50" Text="X(mm)" FontSize="8" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center">
                             <TextBlock.RenderTransform><RotateTransform Angle="90"/></TextBlock.RenderTransform>
                         </TextBlock>
-                        <TextBlock Text="300" Width="50" FontSize="8" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,2">
+                        <TextBlock x:Name="XMaxText" Width="50" FontSize="8" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,2">
                             <TextBlock.RenderTransform><RotateTransform Angle="90"/></TextBlock.RenderTransform>
                         </TextBlock>
                     </Grid>
                 </Border>
 
                 <!-- Y轴坐标 -->
-                <Border Height="10" Width="400" Background="Pink" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,0,0,0">
+                <Border x:Name="YAxisBorder" Height="10" Background="Pink" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,0,0,0">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
@@ -80,14 +80,14 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Width="50" Grid.Column="0" Text="0" FontSize="8" Foreground="Black" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="15,0,0,0"/>
                         <TextBlock Grid.Column="1" Text="Y(mm)" FontSize="8" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        <TextBlock Grid.Column="2" Text="400" FontSize="8" Foreground="Black" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,2,0"/>
+                        <TextBlock x:Name="YMaxText" Grid.Column="2" FontSize="8" Foreground="Black" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,2,0"/>
                     </Grid>
                 </Border>
 
                 <!-- 外部容器 -->
                 <Border x:Name="OuterContainerBorder" Background="White" CornerRadius="0" BorderBrush="#FFCC0000" BorderThickness="2"
-                        Width="400" Height="300" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0">
-                    <Canvas x:Name="DragCanvas" Background="Transparent" Width="400" Height="300">
+                        HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0">
+                    <Canvas x:Name="DragCanvas" Background="Transparent">
                         <Canvas.Styles>
                             <Style Selector="Border.colliding">
                                 <Setter Property="BorderBrush" Value="Red"/>
@@ -99,6 +99,23 @@
                                 <Setter Property="Background" Value="Transparent"/>
                             </Style>
                         </Canvas.Styles>
+                        
+                        <!-- ~1~ 初始的三个方块 @1@ -->
+                        <!-- <Border x:Name="Block1" Width="60" Height="60" Background="Purple" CornerRadius="5" -->
+                        <!--         Canvas.Left="50" Canvas.Top="50" Cursor="SizeAll"> -->
+                        <!--     <TextBlock Text="1" Foreground="White" FontSize="16"  -->
+                        <!--               HorizontalAlignment="Center" VerticalAlignment="Center"/> -->
+                        <!-- </Border> -->
+                        <!-- <Border x:Name="Block2" Width="60" Height="60" Background="Orange" CornerRadius="5" -->
+                        <!--         Canvas.Left="150" Canvas.Top="50" Cursor="SizeAll"> -->
+                        <!--     <TextBlock Text="2" Foreground="White" FontSize="16"  -->
+                        <!--               HorizontalAlignment="Center" VerticalAlignment="Center"/> -->
+                        <!-- </Border> -->
+                        <!-- <Border x:Name="Block3" Width="60" Height="60" Background="Teal" CornerRadius="5" -->
+                        <!--         Canvas.Left="250" Canvas.Top="50" Cursor="SizeAll"> -->
+                        <!--     <TextBlock Text="3" Foreground="White" FontSize="16"  -->
+                        <!--               HorizontalAlignment="Center" VerticalAlignment="Center"/> -->
+                        <!-- </Border> -->
                     </Canvas>
                 </Border>
             </Grid>

@@ -284,7 +284,7 @@
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Stretch"
                                     Margin="8"
-                                    Click="codeClick">
+                                    Click="settingClick">
                                 <StackPanel Orientation="Vertical" HorizontalAlignment="Center"
                                             VerticalAlignment="Center">
                                     <Border BorderBrush="#E0E0E0" BorderThickness="2"

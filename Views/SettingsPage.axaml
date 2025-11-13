@@ -1,0 +1,77 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="ava_demo_new.Views.SettingPage">
+    
+    <Grid Background="#F5F5F5" Margin="20">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="30" Width="600">
+                
+                <!-- 标题 -->
+                <TextBlock Text="系统设置" FontSize="24" FontWeight="Bold" Foreground="#333" HorizontalAlignment="Center"/>
+                
+                <!-- 设置项横向排列 -->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <!-- 底盘尺寸设置 -->
+                    <Border Grid.Column="0" Background="White" Padding="20" CornerRadius="8" BorderBrush="#DDD" BorderThickness="1">
+                        <StackPanel Spacing="15">
+                            <TextBlock Text="底盘尺寸设置" FontSize="16" FontWeight="SemiBold" Foreground="#333"/>
+                            
+                            <StackPanel Spacing="10">
+                                <!-- 底盘宽度 -->
+                                <StackPanel Spacing="5">
+                                    <TextBlock Text="底盘宽度 (mm)" FontSize="12" Foreground="#666"/>
+                                    <TextBox x:Name="PlatformWidth" Text="400" FontSize="14" Padding="10,8"/>
+                                </StackPanel>
+                                
+                                <!-- 底盘长度 -->
+                                <StackPanel Spacing="5">
+                                    <TextBlock Text="底盘长度 (mm)" FontSize="12" Foreground="#666"/>
+                                    <TextBox x:Name="PlatformHeight" Text="300" FontSize="14" Padding="10,8"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                    
+                    <!-- 方块尺寸设置 -->
+                    <Border Grid.Column="2" Background="White" Padding="20" CornerRadius="8" BorderBrush="#DDD" BorderThickness="1">
+                        <StackPanel Spacing="15">
+                            <TextBlock Text="方块尺寸设置" FontSize="16" FontWeight="SemiBold" Foreground="#333"/>
+                            
+                            <StackPanel Spacing="10">
+                                <!-- 方块宽度 -->
+                                <StackPanel Spacing="5">
+                                    <TextBlock Text="方块宽度 (mm)" FontSize="12" Foreground="#666"/>
+                                    <TextBox x:Name="BlockWidth" Text="60" FontSize="14" Padding="10,8"/>
+                                </StackPanel>
+                                
+                                <!-- 方块长度 -->
+                                <StackPanel Spacing="5">
+                                    <TextBlock Text="方块长度 (mm)" FontSize="12" Foreground="#666"/>
+                                    <TextBox x:Name="BlockHeight" Text="60" FontSize="14" Padding="10,8"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+                
+                <!-- 按钮区域 -->
+                <StackPanel Spacing="15" HorizontalAlignment="Center" Margin="0,20,0,0">
+                    <Button Content="保存设置" Click="SaveButton_Click" 
+                            Background="#28A745" Foreground="White" FontSize="14" 
+                            Padding="20,12" Width="200"/>
+                    
+                    <Button Content="返回主页" Click="BackButton_Click" 
+                            Background="#6C757D" Foreground="White" FontSize="14" 
+                            Padding="20,12" Width="200"/>
+                </StackPanel>
+                
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>
