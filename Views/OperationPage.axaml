@@ -2,13 +2,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="ava_demo_new.Views.OperationPage">
 
-    <Grid Background="#F5F5F5">
+    <Grid Background="#F5F5F5" x:Name="MainGrid">
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="20">
             <!-- 控制面板 -->
             <Border Background="White" Padding="15" CornerRadius="0" BorderBrush="#DDD" BorderThickness="1">
                 <StackPanel Spacing="10" Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Button Content="撤销" Click="UndoButton_Click" Background="#6C757D" Foreground="White" Padding="10,5" />
-                    <Button Content="重做" Click="RedoButton_Click" Background="#6C757D" Foreground="White" Padding="10,5" />
+                    <Button Content="删除" Click="DeleteButton_Click" Background="#DC3545" Foreground="White" Padding="10,5" />
+                    <Button Content="清空" Click="ClearAllButton_Click" Background="#FFC107" Foreground="Black" Padding="10,5" />
+                    <Button Content="向左转" Click="RotateLeftButton_Click" Background="#17A2B8" Foreground="White" Padding="10,5" />
+                    <Button Content="向右转" Click="RotateRightButton_Click" Background="#17A2B8" Foreground="White" Padding="10,5" />
                     <Button Content="网格吸附" Click="ToggleGridButton_Click" Background="#17A2B8" Foreground="White" Padding="10,5" />
                     <Button Content="碰撞检测" Click="ToggleCollisionButton_Click" Background="#DC3545" Foreground="White" Padding="10,5" />
                     <Button Content="保存布局" Click="SaveLayoutButton_Click" Background="#28A745" Foreground="White" Padding="10,5" />
@@ -98,24 +100,12 @@
                                 <Setter Property="BorderThickness" Value="1"/>
                                 <Setter Property="Background" Value="Transparent"/>
                             </Style>
+                            <!-- 修改：修复选中样式 -->
+                            <Style Selector="Border.selected">
+                                <Setter Property="BorderBrush" Value="#FF00FF00"/>
+                                <Setter Property="BorderThickness" Value="3"/>
+                            </Style>
                         </Canvas.Styles>
-                        
-                        <!-- ~1~ 初始的三个方块 @1@ -->
-                        <!-- <Border x:Name="Block1" Width="60" Height="60" Background="Purple" CornerRadius="5" -->
-                        <!--         Canvas.Left="50" Canvas.Top="50" Cursor="SizeAll"> -->
-                        <!--     <TextBlock Text="1" Foreground="White" FontSize="16"  -->
-                        <!--               HorizontalAlignment="Center" VerticalAlignment="Center"/> -->
-                        <!-- </Border> -->
-                        <!-- <Border x:Name="Block2" Width="60" Height="60" Background="Orange" CornerRadius="5" -->
-                        <!--         Canvas.Left="150" Canvas.Top="50" Cursor="SizeAll"> -->
-                        <!--     <TextBlock Text="2" Foreground="White" FontSize="16"  -->
-                        <!--               HorizontalAlignment="Center" VerticalAlignment="Center"/> -->
-                        <!-- </Border> -->
-                        <!-- <Border x:Name="Block3" Width="60" Height="60" Background="Teal" CornerRadius="5" -->
-                        <!--         Canvas.Left="250" Canvas.Top="50" Cursor="SizeAll"> -->
-                        <!--     <TextBlock Text="3" Foreground="White" FontSize="16"  -->
-                        <!--               HorizontalAlignment="Center" VerticalAlignment="Center"/> -->
-                        <!-- </Border> -->
                     </Canvas>
                 </Border>
             </Grid>
