@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -24,16 +25,16 @@ namespace ava_demo_new.Views
         private bool _enableSnapToGrid = true;
         private bool _enableCollisionDetection = true;
 
-        // 设置数据字段
-        private double _platformWidth = 400; // Y轴长度
-        private double _platformHeight = 300; // X轴长度
+        // 修正：X轴是横向，Y轴是纵向
+        private double _platformWidth = 400; // X轴长度（横向）
+        private double _platformHeight = 300; // Y轴长度（纵向）
         private double _blockWidth = 60; // 方块宽度
         private double _blockHeight = 60; // 方块高度
 
         // 新增：记录工件布局状态
         private int _currentBlockNumber = 1;
-        private double _currentYPosition = 0; // 当前Y轴位置（用于换行）
-        private double _currentXPosition = 0; // 当前X轴位置（用于换列）
+        private double _currentXPosition = 0; // 当前X轴位置（横向）
+        private double _currentYPosition = 0; // 当前Y轴位置（纵向）
 
         // 新增：选中的工件
         private Border? _selectedWorkpiece;
@@ -51,8 +52,8 @@ namespace ava_demo_new.Views
 
         public void SetPlatformSize(double width, double height)
         {
-            _platformWidth = width; // Y轴长度
-            _platformHeight = height; // X轴长度
+            _platformWidth = width; // X轴长度（横向）
+            _platformHeight = height; // Y轴长度（纵向）
             UpdatePlatformSize();
         }
 
@@ -65,8 +66,8 @@ namespace ava_demo_new.Views
         private void UpdatePlatformSize()
         {
             // 计算坐标轴和容器的尺寸
-            double mainGridWidth = _platformWidth; // 主Grid宽度 = Y轴长度 
-            double mainGridHeight = _platformHeight + 10; // 主Grid高度 = X轴长度 + 坐标轴高度(10)
+            double mainGridWidth = _platformWidth + 10; // 主Grid宽度 = X轴长度 + 坐标轴宽度(10)
+            double mainGridHeight = _platformHeight + 10; // 主Grid高度 = Y轴长度 + 坐标轴高度(10)
 
             // 更新主容器Grid尺寸
             if (MainContainerGrid != null)
@@ -75,30 +76,30 @@ namespace ava_demo_new.Views
                 MainContainerGrid.Height = mainGridHeight;
             }
 
-            // 更新X轴坐标（左侧的垂直坐标轴）
-            if (XAxisBorder != null)
+            // 更新X轴坐标（下方的水平坐标轴）
+            if (YAxisBorder != null) // 注意：这里YAxisBorder实际上是X轴的水平坐标显示
             {
-                XAxisBorder.Height = mainGridHeight; // X轴坐标的高度 = 主Grid高度
+                YAxisBorder.Width = _platformWidth; // X轴坐标的宽度 = X轴长度
             }
 
-            // 更新Y轴坐标（上方的水平坐标轴）
-            if (YAxisBorder != null)
+            // 更新Y轴坐标（左侧的垂直坐标轴）
+            if (XAxisBorder != null) // 注意：这里XAxisBorder实际上是Y轴的垂直坐标显示
             {
-                YAxisBorder.Width = mainGridWidth; // Y轴坐标的宽度 = 主Grid宽度
+                XAxisBorder.Height = _platformHeight; // Y轴坐标的高度 = Y轴长度
             }
 
             // 更新外部容器（托盘）尺寸
             if (OuterContainerBorder != null)
             {
-                OuterContainerBorder.Width = _platformWidth; // 托盘宽度 = Y轴长度
-                OuterContainerBorder.Height = _platformHeight; // 托盘高度 = X轴长度
+                OuterContainerBorder.Width = _platformWidth; // 托盘宽度 = X轴长度
+                OuterContainerBorder.Height = _platformHeight; // 托盘高度 = Y轴长度
             }
 
             // 更新Canvas尺寸
             if (DragCanvas != null)
             {
-                DragCanvas.Width = _platformWidth; // Canvas宽度 = Y轴长度
-                DragCanvas.Height = _platformHeight; // Canvas高度 = X轴长度
+                DragCanvas.Width = _platformWidth; // Canvas宽度 = X轴长度
+                DragCanvas.Height = _platformHeight; // Canvas高度 = Y轴长度
             }
 
             // 更新坐标显示
@@ -107,16 +108,16 @@ namespace ava_demo_new.Views
 
         private void UpdateCoordinateDisplay()
         {
-            // 更新X轴最大值显示（左侧垂直坐标轴）
-            if (XMaxText != null)
+            // 更新X轴最大值显示（下方水平坐标轴）
+            if (YMaxText != null) // 注意：YMaxText实际上是X轴的最大值显示
             {
-                XMaxText.Text = _platformHeight.ToString(); // X轴最大值 = X轴长度
+                YMaxText.Text = _platformWidth.ToString(); // X轴最大值 = X轴长度
             }
 
-            // 更新Y轴最大值显示（上方水平坐标轴）
-            if (YMaxText != null)
+            // 更新Y轴最大值显示（左侧垂直坐标轴）
+            if (XMaxText != null) // 注意：XMaxText实际上是Y轴的最大值显示
             {
-                YMaxText.Text = _platformWidth.ToString(); // Y轴最大值 = Y轴长度
+                XMaxText.Text = _platformHeight.ToString(); // Y轴最大值 = Y轴长度
             }
         }
 
@@ -147,7 +148,7 @@ namespace ava_demo_new.Views
 
         #endregion
 
-        #region 旋转功能 - 完全重新设计
+        #region 旋转功能
 
         private void RotateLeftButton_Click(object? sender, RoutedEventArgs e)
         {
@@ -307,7 +308,7 @@ namespace ava_demo_new.Views
             }
         }
 
-// 设置内部方块颜色
+        // 设置内部方块颜色
         private void SetInnerBlockColor(Border outerBorder, IBrush color)
         {
             if (outerBorder.Child is Grid container && container.Children[0] is Border innerBlock)
@@ -316,7 +317,7 @@ namespace ava_demo_new.Views
             }
         }
 
-// 恢复内部方块颜色为粉色
+        // 恢复内部方块颜色为粉色
         private void ResetInnerBlockColor(Border outerBorder)
         {
             if (outerBorder.Child is Grid container && container.Children[0] is Border innerBlock)
@@ -389,8 +390,8 @@ namespace ava_demo_new.Views
             }
 
             _currentBlockNumber = 1;
-            _currentYPosition = 0;
             _currentXPosition = 0;
+            _currentYPosition = 0;
             SaveCurrentState();
             ShowTemporaryMessage("已清空所有工件");
         }
@@ -408,20 +409,20 @@ namespace ava_demo_new.Views
             if (workpieces.Count == 0)
             {
                 _currentBlockNumber = 1;
-                _currentYPosition = 0;
                 _currentXPosition = 0;
+                _currentYPosition = 0;
                 return;
             }
 
             _currentBlockNumber = workpieces.Count + 1;
             var lastWorkpiece = workpieces.Last();
-            double lastTop = Canvas.GetTop(lastWorkpiece);
             double lastLeft = Canvas.GetLeft(lastWorkpiece);
-            double lastHeight = lastWorkpiece.Height;
+            double lastTop = Canvas.GetTop(lastWorkpiece);
             double lastWidth = lastWorkpiece.Width;
+            double lastHeight = lastWorkpiece.Height;
 
-            _currentYPosition = lastTop;
             _currentXPosition = lastLeft + lastWidth;
+            _currentYPosition = lastTop;
         }
 
         #endregion
@@ -491,14 +492,14 @@ namespace ava_demo_new.Views
 
         #endregion
 
-        #region 约束和碰撞检测 - 简化版本（基于实际尺寸）
+        #region 约束和碰撞检测
 
         private void ApplySimpleConstraints(ref double newX, ref double newY)
         {
             if (_draggedControl == null) return;
 
-            double containerWidth = _platformWidth;
-            double containerHeight = _platformHeight;
+            double containerWidth = _platformWidth; // X轴容器宽度
+            double containerHeight = _platformHeight; // Y轴容器高度
 
             // 使用工件的实际尺寸进行边界约束
             double controlWidth = _draggedControl.Width;
@@ -575,14 +576,14 @@ namespace ava_demo_new.Views
 
         #endregion
 
-        #region 工件添加功能
+        #region 工件添加功能 - 修正版
 
         private void AddWorkpiecesButton_Click(object? sender, RoutedEventArgs e)
         {
             try
             {
-                int xCount = int.Parse(XWorkpieceCount?.Text ?? "0");
-                int yCount = int.Parse(YWorkpieceCount?.Text ?? "0");
+                int xCount = int.Parse(XWorkpieceCount?.Text ?? "0"); // X轴工件数 = 横向排列
+                int yCount = int.Parse(YWorkpieceCount?.Text ?? "0"); // Y轴工件数 = 纵向排列
                 double xMargin = double.Parse(XMargin?.Text ?? "10");
                 double yMargin = double.Parse(YMargin?.Text ?? "10");
 
@@ -608,13 +609,14 @@ namespace ava_demo_new.Views
         {
             if (xCount <= 0 && yCount <= 0) return true;
 
-            double totalBlockWidth = _blockWidth + 2 * xMargin;
-            double totalBlockHeight = _blockHeight + 2 * yMargin;
+            double totalBlockWidth = _blockWidth + 2 * xMargin; // 单个工件总宽度
+            double totalBlockHeight = _blockHeight + 2 * yMargin; // 单个工件总高度
 
+            // 修正：X轴工件检查宽度，Y轴工件检查高度
             if (xCount > 0)
             {
                 double requiredWidth = xCount * totalBlockWidth;
-                if (requiredWidth > _platformWidth)
+                if (requiredWidth > _platformWidth) // X轴工件检查平台宽度
                 {
                     ShowDetailedWarningMessage(xCount, yCount, xMargin, yMargin);
                     return false;
@@ -623,7 +625,7 @@ namespace ava_demo_new.Views
             else if (yCount > 0)
             {
                 double requiredHeight = yCount * totalBlockHeight;
-                if (requiredHeight > _platformHeight)
+                if (requiredHeight > _platformHeight) // Y轴工件检查平台高度
                 {
                     ShowDetailedWarningMessage(xCount, yCount, xMargin, yMargin);
                     return false;
@@ -636,14 +638,14 @@ namespace ava_demo_new.Views
         private int CalculateMaxXCount(double xMargin, double yMargin)
         {
             double totalBlockWidth = _blockWidth + 2 * xMargin;
-            int maxCount = (int)Math.Floor(_platformWidth / totalBlockWidth);
+            int maxCount = (int)Math.Floor(_platformWidth / totalBlockWidth); // X轴工件数受平台宽度限制
             return Math.Max(0, maxCount);
         }
 
         private int CalculateMaxYCount(double xMargin, double yMargin)
         {
             double totalBlockHeight = _blockHeight + 2 * yMargin;
-            int maxCount = (int)Math.Floor(_platformHeight / totalBlockHeight);
+            int maxCount = (int)Math.Floor(_platformHeight / totalBlockHeight); // Y轴工件数受平台高度限制
             return Math.Max(0, maxCount);
         }
 
@@ -659,11 +661,13 @@ namespace ava_demo_new.Views
 
             if (xCount > 0)
             {
+                // X轴工件 = 横向排列
                 AddWorkpiecesInXDirection(xCount, totalWidth, totalHeight, innerBlockWidth, innerBlockHeight, xMargin,
                     yMargin);
             }
             else if (yCount > 0)
             {
+                // Y轴工件 = 纵向排列
                 AddWorkpiecesInYDirection(yCount, totalWidth, totalHeight, innerBlockWidth, innerBlockHeight, xMargin,
                     yMargin);
             }
@@ -680,13 +684,55 @@ namespace ava_demo_new.Views
 
             for (int i = 0; i < count; i++)
             {
-                double posX = startX;
-                double posY = startY + i * totalHeight;
+                double posX = startX + i * totalWidth; // 横向排列
+                double posY = startY;
 
-                // 检查是否需要换行
+                // 检查是否需要换行（Y方向）
+                if (posX + totalWidth > _platformWidth)
+                {
+                    startX = 0;
+                    startY += totalHeight; // 换到下一行
+                    posX = 0;
+                    posY = startY;
+
+                    // 检查是否超出托盘高度
+                    if (posY + totalHeight > _platformHeight)
+                    {
+                        ShowWarningMessage("无法添加更多工件，托盘已满");
+                        break;
+                    }
+                }
+
+                // 确保位置在边界内
+                posX = Math.Max(0, Math.Min(posX, _platformWidth - totalWidth));
+                posY = Math.Max(0, Math.Min(posY, _platformHeight - totalHeight));
+
+                CreateWorkpiece(_currentBlockNumber, posX, posY, innerWidth, innerHeight, xMargin, yMargin);
+                _currentBlockNumber++;
+
+                // 更新当前位置
+                _currentXPosition = posX + totalWidth;
+                _currentYPosition = posY;
+
+                Console.WriteLine($"添加X方向工件 {_currentBlockNumber - 1} 到位置: ({posX}, {posY})");
+            }
+        }
+
+        private void AddWorkpiecesInYDirection(int count, double totalWidth, double totalHeight,
+            double innerWidth, double innerHeight, double xMargin, double yMargin)
+        {
+            double startX = _currentXPosition;
+            double startY = _currentYPosition;
+
+            for (int i = 0; i < count; i++)
+            {
+                double posX = startX;
+                double posY = startY + i * totalHeight; // 纵向排列
+
+                // 检查是否需要换列（X方向）
                 if (posY + totalHeight > _platformHeight)
                 {
-                    startX += totalWidth;
+                    startX += totalWidth; // 换到下一列
                     startY = 0;
                     posX = startX;
                     posY = 0;
@@ -709,48 +755,6 @@ namespace ava_demo_new.Views
                 // 更新当前位置
                 _currentXPosition = posX;
                 _currentYPosition = posY + totalHeight;
-
-                Console.WriteLine($"添加X方向工件 {_currentBlockNumber - 1} 到位置: ({posX}, {posY})");
-            }
-        }
-
-        private void AddWorkpiecesInYDirection(int count, double totalWidth, double totalHeight,
-            double innerWidth, double innerHeight, double xMargin, double yMargin)
-        {
-            double startX = _currentXPosition;
-            double startY = _currentYPosition;
-
-            for (int i = 0; i < count; i++)
-            {
-                double posX = startX + i * totalWidth;
-                double posY = startY;
-
-                // 检查是否需要换列
-                if (posX + totalWidth > _platformWidth)
-                {
-                    startX = 0;
-                    startY += totalHeight;
-                    posX = 0;
-                    posY = startY;
-
-                    // 检查是否超出托盘高度
-                    if (posY + totalHeight > _platformHeight)
-                    {
-                        ShowWarningMessage("无法添加更多工件，托盘已满");
-                        break;
-                    }
-                }
-
-                // 确保位置在边界内
-                posX = Math.Max(0, Math.Min(posX, _platformWidth - totalWidth));
-                posY = Math.Max(0, Math.Min(posY, _platformHeight - totalHeight));
-
-                CreateWorkpiece(_currentBlockNumber, posX, posY, innerWidth, innerHeight, xMargin, yMargin);
-                _currentBlockNumber++;
-
-                // 更新当前位置
-                _currentXPosition = posX + totalWidth;
-                _currentYPosition = posY;
 
                 Console.WriteLine($"添加Y方向工件 {_currentBlockNumber - 1} 到位置: ({posX}, {posY})");
             }
@@ -833,7 +837,6 @@ namespace ava_demo_new.Views
                 $"创建工件: Workpiece{blockNumber}, 位置: ({posX}, {posY}), 尺寸: {outerBorder.Width}x{outerBorder.Height}");
         }
 
-
         private void OnWorkpieceCountTextChanged(object? sender, TextChangedEventArgs e)
         {
             if (sender is TextBox textBox)
@@ -856,6 +859,130 @@ namespace ava_demo_new.Views
         }
 
         #endregion
+
+     #region 导出坐标功能
+
+private void ExportButton_Click(object? sender, RoutedEventArgs e)
+{
+    ExportWorkpieceCoordinates();
+}
+
+private void ExportWorkpieceCoordinates()
+{
+    if (DragCanvas == null || DragCanvas.Children.Count == 0)
+    {
+        ShowTemporaryMessage("没有可导出的工件");
+        return;
+    }
+
+    try
+    {
+        var workpieces = DragCanvas.Children
+            .OfType<Border>()
+            .Where(b => b.Name?.StartsWith("Workpiece") == true)
+            .ToList();
+
+        if (workpieces.Count == 0)
+        {
+            ShowTemporaryMessage("没有找到可导出的工件");
+            return;
+        }
+
+        var workpieceList = new List<WorkpieceCoordinate>();
+
+        foreach (var workpiece in workpieces)
+        {
+            string name = workpiece.Name ?? "Unknown";
+            double canvasLeft = Canvas.GetLeft(workpiece);  // 横向坐标（Y轴）
+            double canvasTop = Canvas.GetTop(workpiece);    // 纵向坐标（X轴）
+            
+            // 获取旋转角度
+            double rotation = _workpieceRotations.ContainsKey(name) ? _workpieceRotations[name] : 0;
+
+            // 计算中心点坐标
+            double centerX = canvasTop + workpiece.Height / 2;    // X坐标（纵向）
+            double centerY = canvasLeft + workpiece.Width / 2;    // Y坐标（横向）
+
+            var coordinate = new WorkpieceCoordinate
+            {
+                Name = name,
+                X = Math.Round(centerX, 2),        // 纵向坐标
+                Y = Math.Round(centerY, 2),        // 横向坐标
+                Z = 0,
+                Rotation = Math.Round(rotation, 2),
+                Width = Math.Round(workpiece.Width, 2),
+                Height = Math.Round(workpiece.Height, 2),
+                CanvasLeft = canvasLeft,
+                CanvasTop = canvasTop
+            };
+
+            workpieceList.Add(coordinate);
+        }
+
+        // 按照码垛顺序排序：先按X（纵向）从小到大，再按Y（横向）从小到大
+        var sortedWorkpieces = workpieceList
+            .OrderBy(w => w.X)  // 先按纵向坐标排序（从上到下）
+            .ThenBy(w => w.Y)   // 再按横向坐标排序（从左到右）
+            .ToList();
+
+        // 打印排序信息
+        Console.WriteLine("=== 工件排序信息 ===");
+        var groupedByX = sortedWorkpieces.GroupBy(w => w.X).OrderBy(g => g.Key);
+        int rowNumber = 1;
+        foreach (var group in groupedByX)
+        {
+            Console.WriteLine($"第{rowNumber}行 (X={group.Key:F2}): {string.Join(", ", group.Select(w => w.Name))}");
+            rowNumber++;
+        }
+
+        // 序列化为JSON
+        var options = new JsonSerializerOptions
+        {
+            WriteIndented = true,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
+
+        string json = JsonSerializer.Serialize(sortedWorkpieces, options);
+        
+        // 打印到控制台
+        Console.WriteLine("=== 导出的工件坐标数据（按码垛顺序排序）===");
+        Console.WriteLine("排序规则: 先按X(纵向)从小到大，再按Y(横向)从小到大");
+        Console.WriteLine("码垛顺序: 从上到下逐行，每行从左到右");
+        Console.WriteLine(json);
+        Console.WriteLine("=== 数据结束 ===");
+
+        ShowTemporaryMessage($"已导出 {sortedWorkpieces.Count} 个工件的坐标数据（按码垛顺序排序）");
+
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"导出坐标失败: {ex.Message}");
+        ShowWarningMessage($"导出坐标失败: {ex.Message}");
+    }
+}
+
+#endregion
+
+#region 数据类
+
+public class WorkpieceCoordinate
+{
+    public string Name { get; set; } = string.Empty;
+    public double X { get; set; }        // 纵向坐标
+    public double Y { get; set; }        // 横向坐标
+    public double Z { get; set; }
+    public double Rotation { get; set; }
+    public double Width { get; set; }
+    public double Height { get; set; }
+    // 内部使用，不导出到JSON
+    [JsonIgnore]
+    public double CanvasLeft { get; set; }
+    [JsonIgnore]
+    public double CanvasTop { get; set; }
+}
+
+#endregion
+
 
         #region 工具方法
 
@@ -936,7 +1063,7 @@ namespace ava_demo_new.Views
             {
                 Title = "警告",
                 Width = 400,
-                Height = 200,
+                Height = 400,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
                 CanResize = false,
             };
@@ -1007,13 +1134,13 @@ namespace ava_demo_new.Views
             {
                 double requiredWidth = xCount * totalBlockWidth;
                 message =
-                    $"❌ X轴工件数量超出托盘边界！\n\n当前设置：{xCount}个工件\n所需宽度：{requiredWidth:F1}mm\n托盘宽度：{_platformWidth:F1}mm\n单个工件：{totalBlockWidth:F1}mm\n\n💡 建议：最多可添加 {maxXCount} 个Y轴工件";
+                    $"❌ Y轴工件数量超出托盘边界！\n\n当前设置：{xCount}个工件\n所需宽度：{requiredWidth:F1}mm\n托盘宽度：{_platformWidth:F1}mm\n单个工件：{totalBlockWidth:F1}mm\n\n💡 建议：最多可添加 {maxXCount} 个Y轴工件";
             }
             else
             {
                 double requiredHeight = yCount * totalBlockHeight;
                 message =
-                    $"❌ Y轴工件数量超出托盘边界！\n\n当前设置：{yCount}个工件\n所需高度：{requiredHeight:F1}mm\n托盘高度：{_platformHeight:F1}mm\n单个工件：{totalBlockHeight:F1}mm\n\n💡 建议：最多可添加 {maxYCount} 个X轴工件";
+                    $"❌ X轴工件数量超出托盘边界！\n\n当前设置：{yCount}个工件\n所需高度：{requiredHeight:F1}mm\n托盘高度：{_platformHeight:F1}mm\n单个工件：{totalBlockHeight:F1}mm\n\n💡 建议：最多可添加 {maxYCount} 个X轴工件";
             }
 
             ShowWarningMessage(message);
@@ -1084,7 +1211,6 @@ namespace ava_demo_new.Views
             _undoStack.Push(state);
             _redoStack.Clear();
         }
-
 
         private Control? FindControlByName(string name)
         {
