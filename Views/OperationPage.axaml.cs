@@ -25,19 +25,19 @@ namespace ava_demo_new.Views
         private bool _enableCollisionDetection = true;
 
         // 设置数据字段
-        private double _platformWidth = 400;   // Y轴长度
-        private double _platformHeight = 300;  // X轴长度
-        private double _blockWidth = 60;       // 方块宽度
-        private double _blockHeight = 60;      // 方块高度
+        private double _platformWidth = 400; // Y轴长度
+        private double _platformHeight = 300; // X轴长度
+        private double _blockWidth = 60; // 方块宽度
+        private double _blockHeight = 60; // 方块高度
 
         // 新增：记录工件布局状态
         private int _currentBlockNumber = 1;
-        private double _currentYPosition = 0;  // 当前Y轴位置（用于换行）
-        private double _currentXPosition = 0;  // 当前X轴位置（用于换列）
+        private double _currentYPosition = 0; // 当前Y轴位置（用于换行）
+        private double _currentXPosition = 0; // 当前X轴位置（用于换列）
 
         // 新增：选中的工件
         private Border? _selectedWorkpiece;
-        
+
         // 存储每个工件的旋转角度
         private readonly Dictionary<string, double> _workpieceRotations = new();
 
@@ -48,10 +48,11 @@ namespace ava_demo_new.Views
         }
 
         #region 设置数据方法
+
         public void SetPlatformSize(double width, double height)
         {
-            _platformWidth = width;    // Y轴长度
-            _platformHeight = height;  // X轴长度
+            _platformWidth = width; // Y轴长度
+            _platformHeight = height; // X轴长度
             UpdatePlatformSize();
         }
 
@@ -64,9 +65,9 @@ namespace ava_demo_new.Views
         private void UpdatePlatformSize()
         {
             // 计算坐标轴和容器的尺寸
-            double mainGridWidth = _platformWidth;    // 主Grid宽度 = Y轴长度 
-            double mainGridHeight = _platformHeight + 10;  // 主Grid高度 = X轴长度 + 坐标轴高度(10)
-            
+            double mainGridWidth = _platformWidth; // 主Grid宽度 = Y轴长度 
+            double mainGridHeight = _platformHeight + 10; // 主Grid高度 = X轴长度 + 坐标轴高度(10)
+
             // 更新主容器Grid尺寸
             if (MainContainerGrid != null)
             {
@@ -77,26 +78,26 @@ namespace ava_demo_new.Views
             // 更新X轴坐标（左侧的垂直坐标轴）
             if (XAxisBorder != null)
             {
-                XAxisBorder.Height = mainGridHeight;  // X轴坐标的高度 = 主Grid高度
+                XAxisBorder.Height = mainGridHeight; // X轴坐标的高度 = 主Grid高度
             }
 
             // 更新Y轴坐标（上方的水平坐标轴）
             if (YAxisBorder != null)
             {
-                YAxisBorder.Width = mainGridWidth;    // Y轴坐标的宽度 = 主Grid宽度
+                YAxisBorder.Width = mainGridWidth; // Y轴坐标的宽度 = 主Grid宽度
             }
 
             // 更新外部容器（托盘）尺寸
             if (OuterContainerBorder != null)
             {
-                OuterContainerBorder.Width = _platformWidth;   // 托盘宽度 = Y轴长度
+                OuterContainerBorder.Width = _platformWidth; // 托盘宽度 = Y轴长度
                 OuterContainerBorder.Height = _platformHeight; // 托盘高度 = X轴长度
             }
 
             // 更新Canvas尺寸
             if (DragCanvas != null)
             {
-                DragCanvas.Width = _platformWidth;   // Canvas宽度 = Y轴长度
+                DragCanvas.Width = _platformWidth; // Canvas宽度 = Y轴长度
                 DragCanvas.Height = _platformHeight; // Canvas高度 = X轴长度
             }
 
@@ -118,9 +119,11 @@ namespace ava_demo_new.Views
                 YMaxText.Text = _platformWidth.ToString(); // Y轴最大值 = Y轴长度
             }
         }
+
         #endregion
 
         #region 初始化方法
+
         private void OnLoaded(object? sender, RoutedEventArgs e)
         {
             if (DragCanvas != null)
@@ -129,7 +132,7 @@ namespace ava_demo_new.Views
                 AddDragEventsToChildren(DragCanvas);
                 SaveCurrentState();
             }
-            
+
             // 根据设置更新UI
             UpdatePlatformSize();
         }
@@ -141,9 +144,11 @@ namespace ava_demo_new.Views
                 AddDragEvents(child);
             }
         }
+
         #endregion
 
         #region 旋转功能 - 完全重新设计
+
         private void RotateLeftButton_Click(object? sender, RoutedEventArgs e)
         {
             RotateWorkpiece(-90); // 向左旋转90度
@@ -170,11 +175,11 @@ namespace ava_demo_new.Views
             }
 
             double currentRotation = _workpieceRotations[workpieceName];
-            
+
             // 计算新的旋转角度
             double newRotation = (currentRotation + angle) % 360;
             if (newRotation < 0) newRotation += 360;
-            
+
             _workpieceRotations[workpieceName] = newRotation;
 
             Console.WriteLine($"旋转工件 {workpieceName}: {currentRotation}° -> {newRotation}°");
@@ -228,13 +233,23 @@ namespace ava_demo_new.Views
             {
                 container.Width = newWidth;
                 container.Height = newHeight;
-                
+
                 if (container.Children[0] is Border innerBlock)
                 {
+                    // 更新内部块的尺寸
                     innerBlock.Width = innerNewWidth;
                     innerBlock.Height = innerNewHeight;
                     innerBlock.HorizontalAlignment = HorizontalAlignment.Center;
                     innerBlock.VerticalAlignment = VerticalAlignment.Center;
+
+                    // 给内部块中的文字添加旋转变换
+                    if (innerBlock.Child is TextBlock textBlock)
+                    {
+                        textBlock.RenderTransform = new RotateTransform(rotation);
+                        textBlock.RenderTransformOrigin = new RelativePoint(0.5, 0.5, RelativeUnit.Relative);
+                    }
+
+                    Console.WriteLine($"内部块尺寸: {innerNewWidth}x{innerNewHeight}, 文字旋转: {rotation}°");
                 }
             }
 
@@ -249,7 +264,7 @@ namespace ava_demo_new.Views
             Canvas.SetTop(workpiece, newTop);
 
             Console.WriteLine($"应用旋转: 外部边框 {originalWidth}x{originalHeight} -> {newWidth}x{newHeight}");
-            Console.WriteLine($"内部块: {innerNewWidth}x{innerNewHeight}, 位置: ({newLeft}, {newTop})");
+            Console.WriteLine($"位置: ({newLeft}, {newTop})");
         }
 
         private void SelectWorkpiece(Border workpiece)
@@ -258,11 +273,21 @@ namespace ava_demo_new.Views
             if (_selectedWorkpiece != null)
             {
                 _selectedWorkpiece.Classes.Remove("selected");
+                ResetInnerBlockColor(_selectedWorkpiece); // 恢复内部方块颜色
+                Console.WriteLine($"取消选中: {_selectedWorkpiece.Name}");
             }
 
             // 选中新的工件
             _selectedWorkpiece = workpiece;
-            _selectedWorkpiece.Classes.Add("selected");
+
+            // 确保添加selected类
+            if (!_selectedWorkpiece.Classes.Contains("selected"))
+            {
+                _selectedWorkpiece.Classes.Add("selected");
+            }
+
+            // 设置内部方块为蓝色
+            SetInnerBlockColor(_selectedWorkpiece, Brushes.Blue);
 
             // 获取当前旋转角度
             string workpieceName = workpiece.Name ?? "";
@@ -276,12 +301,34 @@ namespace ava_demo_new.Views
             if (_selectedWorkpiece != null)
             {
                 _selectedWorkpiece.Classes.Remove("selected");
+                ResetInnerBlockColor(_selectedWorkpiece); // 恢复内部方块颜色
+                Console.WriteLine($"取消选中: {_selectedWorkpiece.Name}");
                 _selectedWorkpiece = null;
             }
         }
+
+// 设置内部方块颜色
+        private void SetInnerBlockColor(Border outerBorder, IBrush color)
+        {
+            if (outerBorder.Child is Grid container && container.Children[0] is Border innerBlock)
+            {
+                innerBlock.Background = color;
+            }
+        }
+
+// 恢复内部方块颜色为粉色
+        private void ResetInnerBlockColor(Border outerBorder)
+        {
+            if (outerBorder.Child is Grid container && container.Children[0] is Border innerBlock)
+            {
+                innerBlock.Background = Brushes.Pink;
+            }
+        }
+
         #endregion
 
         #region 删除和清空功能
+
         private void DeleteButton_Click(object? sender, RoutedEventArgs e)
         {
             DeleteLastWorkpiece();
@@ -311,7 +358,7 @@ namespace ava_demo_new.Views
 
                 // 从字典中移除
                 _workpieceRotations.Remove(lastWorkpiece.Name ?? "");
-                
+
                 DragCanvas.Children.Remove(lastWorkpiece);
                 _currentBlockNumber--;
                 SaveCurrentState();
@@ -376,9 +423,11 @@ namespace ava_demo_new.Views
             _currentYPosition = lastTop;
             _currentXPosition = lastLeft + lastWidth;
         }
+
         #endregion
 
         #region 拖拽事件处理
+
         private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
         {
             if (sender is Control control && e.GetCurrentPoint(control).Properties.IsLeftButtonPressed)
@@ -397,7 +446,7 @@ namespace ava_demo_new.Views
 
                 e.Pointer.Capture(control);
                 control.Opacity = 0.7;
-                
+
                 Console.WriteLine($"开始拖拽: {control.Name}, 位置: ({left}, {top})");
             }
         }
@@ -439,9 +488,11 @@ namespace ava_demo_new.Views
                 _draggedControl = null;
             }
         }
+
         #endregion
 
         #region 约束和碰撞检测 - 简化版本（基于实际尺寸）
+
         private void ApplySimpleConstraints(ref double newX, ref double newY)
         {
             if (_draggedControl == null) return;
@@ -462,7 +513,7 @@ namespace ava_demo_new.Views
             {
                 newX = SnapToGrid(newX);
                 newY = SnapToGrid(newY);
-                
+
                 // 重新约束边界
                 newX = Math.Max(0, Math.Min(newX, containerWidth - controlWidth));
                 newY = Math.Max(0, Math.Min(newY, containerHeight - controlHeight));
@@ -501,11 +552,11 @@ namespace ava_demo_new.Views
                 if (movingBounds.Intersects(otherBounds))
                 {
                     ShowCollisionFeedback(otherControl);
-                    
+
                     // 调试信息
                     Console.WriteLine($"碰撞检测: 移动工件 {movingControl.Name} 与 {otherControl.Name} 发生碰撞");
                     Console.WriteLine($"移动边界: {movingBounds}, 其他边界: {otherBounds}");
-                    
+
                     return true;
                 }
             }
@@ -516,14 +567,16 @@ namespace ava_demo_new.Views
         // 检查边界碰撞
         private bool CheckBoundaryCollision(Rect bounds)
         {
-            return bounds.Left < 0 || 
-                   bounds.Top < 0 || 
-                   bounds.Right > _platformWidth || 
+            return bounds.Left < 0 ||
+                   bounds.Top < 0 ||
+                   bounds.Right > _platformWidth ||
                    bounds.Bottom > _platformHeight;
         }
+
         #endregion
 
         #region 工件添加功能
+
         private void AddWorkpiecesButton_Click(object? sender, RoutedEventArgs e)
         {
             try
@@ -550,7 +603,7 @@ namespace ava_demo_new.Views
                 ShowWarningMessage($"添加工件失败: {ex.Message}");
             }
         }
-        
+
         private bool CheckBoundary(int xCount, int yCount, double xMargin, double yMargin)
         {
             if (xCount <= 0 && yCount <= 0) return true;
@@ -579,7 +632,7 @@ namespace ava_demo_new.Views
 
             return true;
         }
-        
+
         private int CalculateMaxXCount(double xMargin, double yMargin)
         {
             double totalBlockWidth = _blockWidth + 2 * xMargin;
@@ -600,25 +653,27 @@ namespace ava_demo_new.Views
 
             double innerBlockWidth = _blockWidth;
             double innerBlockHeight = _blockHeight;
-            
+
             double totalWidth = innerBlockWidth + 2 * xMargin;
             double totalHeight = innerBlockHeight + 2 * yMargin;
 
             if (xCount > 0)
             {
-                AddWorkpiecesInXDirection(xCount, totalWidth, totalHeight, innerBlockWidth, innerBlockHeight, xMargin, yMargin);
+                AddWorkpiecesInXDirection(xCount, totalWidth, totalHeight, innerBlockWidth, innerBlockHeight, xMargin,
+                    yMargin);
             }
             else if (yCount > 0)
             {
-                AddWorkpiecesInYDirection(yCount, totalWidth, totalHeight, innerBlockWidth, innerBlockHeight, xMargin, yMargin);
+                AddWorkpiecesInYDirection(yCount, totalWidth, totalHeight, innerBlockWidth, innerBlockHeight, xMargin,
+                    yMargin);
             }
-            
+
             Console.WriteLine($"添加了 {xCount + yCount} 个工件");
             ShowTemporaryMessage($"成功添加 {xCount + yCount} 个工件");
         }
 
-        private void AddWorkpiecesInXDirection(int count, double totalWidth, double totalHeight, 
-                                             double innerWidth, double innerHeight, double xMargin, double yMargin)
+        private void AddWorkpiecesInXDirection(int count, double totalWidth, double totalHeight,
+            double innerWidth, double innerHeight, double xMargin, double yMargin)
         {
             double startX = _currentXPosition;
             double startY = _currentYPosition;
@@ -627,7 +682,7 @@ namespace ava_demo_new.Views
             {
                 double posX = startX;
                 double posY = startY + i * totalHeight;
-                
+
                 // 检查是否需要换行
                 if (posY + totalHeight > _platformHeight)
                 {
@@ -635,7 +690,7 @@ namespace ava_demo_new.Views
                     startY = 0;
                     posX = startX;
                     posY = 0;
-                    
+
                     // 检查是否超出托盘宽度
                     if (posX + totalWidth > _platformWidth)
                     {
@@ -643,24 +698,24 @@ namespace ava_demo_new.Views
                         break;
                     }
                 }
-                
+
                 // 确保位置在边界内
                 posX = Math.Max(0, Math.Min(posX, _platformWidth - totalWidth));
                 posY = Math.Max(0, Math.Min(posY, _platformHeight - totalHeight));
-                
+
                 CreateWorkpiece(_currentBlockNumber, posX, posY, innerWidth, innerHeight, xMargin, yMargin);
                 _currentBlockNumber++;
-                
+
                 // 更新当前位置
                 _currentXPosition = posX;
                 _currentYPosition = posY + totalHeight;
-                
+
                 Console.WriteLine($"添加X方向工件 {_currentBlockNumber - 1} 到位置: ({posX}, {posY})");
             }
         }
 
         private void AddWorkpiecesInYDirection(int count, double totalWidth, double totalHeight,
-                                             double innerWidth, double innerHeight, double xMargin, double yMargin)
+            double innerWidth, double innerHeight, double xMargin, double yMargin)
         {
             double startX = _currentXPosition;
             double startY = _currentYPosition;
@@ -669,7 +724,7 @@ namespace ava_demo_new.Views
             {
                 double posX = startX + i * totalWidth;
                 double posY = startY;
-                
+
                 // 检查是否需要换列
                 if (posX + totalWidth > _platformWidth)
                 {
@@ -677,7 +732,7 @@ namespace ava_demo_new.Views
                     startY += totalHeight;
                     posX = 0;
                     posY = startY;
-                    
+
                     // 检查是否超出托盘高度
                     if (posY + totalHeight > _platformHeight)
                     {
@@ -685,40 +740,61 @@ namespace ava_demo_new.Views
                         break;
                     }
                 }
-                
+
                 // 确保位置在边界内
                 posX = Math.Max(0, Math.Min(posX, _platformWidth - totalWidth));
                 posY = Math.Max(0, Math.Min(posY, _platformHeight - totalHeight));
-                
+
                 CreateWorkpiece(_currentBlockNumber, posX, posY, innerWidth, innerHeight, xMargin, yMargin);
                 _currentBlockNumber++;
-                
+
                 // 更新当前位置
                 _currentXPosition = posX + totalWidth;
                 _currentYPosition = posY;
-                
+
                 Console.WriteLine($"添加Y方向工件 {_currentBlockNumber - 1} 到位置: ({posX}, {posY})");
             }
         }
 
-        private void CreateWorkpiece(int blockNumber, double posX, double posY, double innerWidth, double innerHeight, double xMargin, double yMargin)
+        private void CreateWorkpiece(int blockNumber, double posX, double posY, double innerWidth, double innerHeight,
+            double xMargin, double yMargin)
         {
-            var innerBlock = CreateInnerBlock(blockNumber, innerWidth, innerHeight);
+            // 创建内部方块（默认粉色）
+            var innerBlock = new Border
+            {
+                Width = innerWidth, // 初始宽度 = 块宽度
+                Height = innerHeight, // 初始高度 = 块高度
+                Background = Brushes.Pink, // 默认粉色
+                CornerRadius = new CornerRadius(0)
+            };
 
+            var textBlock = new TextBlock
+            {
+                Text = blockNumber.ToString(),
+                Foreground = Brushes.White,
+                FontSize = 16,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+
+            // 初始化文字旋转为0度
+            textBlock.RenderTransform = new RotateTransform(0);
+            textBlock.RenderTransformOrigin = new RelativePoint(0.5, 0.5, RelativeUnit.Relative);
+
+            innerBlock.Child = textBlock;
+
+            // 创建外部边框
             var outerBorder = new Border
             {
                 Name = $"Workpiece{blockNumber}",
                 Width = innerWidth + 2 * xMargin,
                 Height = innerHeight + 2 * yMargin,
                 Background = Brushes.Transparent,
-                BorderBrush = xMargin > 0 || yMargin > 0 ? Brushes.Blue : Brushes.Transparent,
+                BorderBrush = Brushes.Blue, // 蓝色边框
                 BorderThickness = new Thickness(1),
-                CornerRadius = new CornerRadius(2),
+                CornerRadius = new CornerRadius(0),
                 Cursor = new Cursor(StandardCursorType.SizeAll)
             };
-
-            // 添加工件边框样式类
-            outerBorder.Classes.Add("workpiece-border");
 
             var container = new Grid
             {
@@ -741,7 +817,7 @@ namespace ava_demo_new.Views
             _workpieceRotations[outerBorder.Name] = 0;
 
             AddDragEvents(outerBorder);
-            
+
             outerBorder.PointerPressed += (sender, e) =>
             {
                 if (e.GetCurrentPoint(outerBorder).Properties.IsLeftButtonPressed)
@@ -752,32 +828,11 @@ namespace ava_demo_new.Views
             };
 
             DragCanvas!.Children.Add(outerBorder);
-            
-            Console.WriteLine($"创建工件: Workpiece{blockNumber}, 位置: ({posX}, {posY}), 尺寸: {outerBorder.Width}x{outerBorder.Height}");
+
+            Console.WriteLine(
+                $"创建工件: Workpiece{blockNumber}, 位置: ({posX}, {posY}), 尺寸: {outerBorder.Width}x{outerBorder.Height}");
         }
 
-        private Border CreateInnerBlock(int blockNumber, double width, double height)
-        {
-            var innerBlock = new Border
-            {
-                Width = width,
-                Height = height,
-                Background = GetBlockColor(blockNumber),
-                CornerRadius = new CornerRadius(0)
-            };
-
-            var textBlock = new TextBlock
-            {
-                Text = blockNumber.ToString(),
-                Foreground = Brushes.White,
-                FontSize = 16,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center
-            };
-
-            innerBlock.Child = textBlock;
-            return innerBlock;
-        }
 
         private void OnWorkpieceCountTextChanged(object? sender, TextChangedEventArgs e)
         {
@@ -799,9 +854,11 @@ namespace ava_demo_new.Views
                 }
             }
         }
+
         #endregion
 
         #region 工具方法
+
         private double GetCurrentXMargin() => double.Parse(XMargin?.Text ?? "10");
         private double GetCurrentYMargin() => double.Parse(YMargin?.Text ?? "10");
 
@@ -847,7 +904,7 @@ namespace ava_demo_new.Views
             if (!control.Classes.Contains("colliding"))
             {
                 control.Classes.Add("colliding");
-                DispatcherTimer.RunOnce(() => control.Classes.Remove("colliding"), 
+                DispatcherTimer.RunOnce(() => control.Classes.Remove("colliding"),
                     TimeSpan.FromMilliseconds(200));
             }
         }
@@ -868,9 +925,11 @@ namespace ava_demo_new.Views
             };
             return colors[(blockNumber - 1) % colors.Length];
         }
+
         #endregion
 
         #region 弹窗警告功能
+
         private void ShowWarningMessage(string message)
         {
             var dialogWindow = new Window
@@ -939,7 +998,7 @@ namespace ava_demo_new.Views
         {
             double totalBlockWidth = _blockWidth + 2 * xMargin;
             double totalBlockHeight = _blockHeight + 2 * yMargin;
-            
+
             int maxXCount = CalculateMaxXCount(xMargin, yMargin);
             int maxYCount = CalculateMaxYCount(xMargin, yMargin);
 
@@ -947,12 +1006,14 @@ namespace ava_demo_new.Views
             if (xCount > 0)
             {
                 double requiredWidth = xCount * totalBlockWidth;
-                message = $"❌ X轴工件数量超出托盘边界！\n\n当前设置：{xCount}个工件\n所需宽度：{requiredWidth:F1}mm\n托盘宽度：{_platformWidth:F1}mm\n单个工件：{totalBlockWidth:F1}mm\n\n💡 建议：最多可添加 {maxXCount} 个Y轴工件";
+                message =
+                    $"❌ X轴工件数量超出托盘边界！\n\n当前设置：{xCount}个工件\n所需宽度：{requiredWidth:F1}mm\n托盘宽度：{_platformWidth:F1}mm\n单个工件：{totalBlockWidth:F1}mm\n\n💡 建议：最多可添加 {maxXCount} 个Y轴工件";
             }
             else
             {
                 double requiredHeight = yCount * totalBlockHeight;
-                message = $"❌ Y轴工件数量超出托盘边界！\n\n当前设置：{yCount}个工件\n所需高度：{requiredHeight:F1}mm\n托盘高度：{_platformHeight:F1}mm\n单个工件：{totalBlockHeight:F1}mm\n\n💡 建议：最多可添加 {maxYCount} 个X轴工件";
+                message =
+                    $"❌ Y轴工件数量超出托盘边界！\n\n当前设置：{yCount}个工件\n所需高度：{requiredHeight:F1}mm\n托盘高度：{_platformHeight:F1}mm\n单个工件：{totalBlockHeight:F1}mm\n\n💡 建议：最多可添加 {maxYCount} 个X轴工件";
             }
 
             ShowWarningMessage(message);
@@ -981,7 +1042,8 @@ namespace ava_demo_new.Views
 
             if (this.FindControl<Grid>("MainGrid") is Grid mainGrid)
             {
-                var existingWarning = mainGrid.Children.FirstOrDefault(c => c is Border b && b.Background?.ToString() == "#FFFFFF00");
+                var existingWarning =
+                    mainGrid.Children.FirstOrDefault(c => c is Border b && b.Background?.ToString() == "#FFFFFF00");
                 if (existingWarning != null)
                 {
                     mainGrid.Children.Remove(existingWarning);
@@ -989,15 +1051,14 @@ namespace ava_demo_new.Views
 
                 mainGrid.Children.Add(warningPanel);
 
-                DispatcherTimer.RunOnce(() =>
-                {
-                    mainGrid.Children.Remove(warningPanel);
-                }, TimeSpan.FromSeconds(3));
+                DispatcherTimer.RunOnce(() => { mainGrid.Children.Remove(warningPanel); }, TimeSpan.FromSeconds(3));
             }
         }
+
         #endregion
 
         #region 撤销重做功能
+
         private void SaveCurrentState()
         {
             var state = new LayoutState();
@@ -1024,34 +1085,6 @@ namespace ava_demo_new.Views
             _redoStack.Clear();
         }
 
-        private void ApplyLayoutState(LayoutState state)
-        {
-            foreach (var elementState in state.Elements)
-            {
-                var control = FindControlByName(elementState.Name);
-                if (control != null && control is Border border)
-                {
-                    // 恢复位置和尺寸
-                    Canvas.SetLeft(control, elementState.Left);
-                    Canvas.SetTop(control, elementState.Top);
-                    border.Width = elementState.Width;
-                    border.Height = elementState.Height;
-
-                    // 恢复内部容器尺寸
-                    if (border.Child is Grid container)
-                    {
-                        container.Width = elementState.Width;
-                        container.Height = elementState.Height;
-                    }
-
-                    // 恢复旋转角度
-                    _workpieceRotations[elementState.Name] = elementState.Rotation;
-
-                    // 重新应用旋转来更新内部块
-                    ApplyRotationToWorkpiece(border, elementState.Rotation);
-                }
-            }
-        }
 
         private Control? FindControlByName(string name)
         {
@@ -1060,11 +1093,14 @@ namespace ava_demo_new.Views
                 if (child.Name == name)
                     return child;
             }
+
             return null;
         }
+
         #endregion
 
         #region 按钮事件
+
         private void ToggleGridButton_Click(object? sender, RoutedEventArgs e)
         {
             _enableSnapToGrid = !_enableSnapToGrid;
@@ -1084,7 +1120,7 @@ namespace ava_demo_new.Views
         }
 
         private void SaveLayoutButton_Click(object? sender, RoutedEventArgs e) => SaveLayout();
-        
+
         private void BackButton_Click(object? sender, RoutedEventArgs e)
         {
             if (this.Parent is ContentControl contentControl && OriginalContent != null)
@@ -1097,9 +1133,11 @@ namespace ava_demo_new.Views
         {
             ClearAllWorkpieces();
         }
+
         #endregion
 
         #region 公共方法
+
         public void SaveLayout()
         {
             var json = JsonSerializer.Serialize(_undoStack.Peek(), new JsonSerializerOptions { WriteIndented = true });
@@ -1108,6 +1146,7 @@ namespace ava_demo_new.Views
         }
 
         public Control? OriginalContent { get; set; }
+
         #endregion
     }
 
