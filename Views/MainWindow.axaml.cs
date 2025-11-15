@@ -64,7 +64,19 @@ public partial class MainWindow : Window
         MainContent.Content = codeEdit;
     }
     
+    private void robotClick(object? sender, RoutedEventArgs e)
+    {
+        Console.WriteLine("codeClick - 跳转到树形页面");
     
+        // 创建code页面
+        var robotShow= new RobotShow();
+    
+        // 告诉code页面原始内容，用于返回
+        robotShow.OriginalContent = _originalContent;
+    
+        // 显示code页面
+        MainContent.Content = robotShow;
+    }
     private void settingClick(object? sender, RoutedEventArgs e)
     {
         Console.WriteLine("settingClick - 跳转到设置页面");

@@ -21,16 +21,16 @@
             <!-- 工件布局配置 -->
             <Border Background="White" Padding="15" CornerRadius="0" BorderBrush="#DDD" BorderThickness="1">
                 <StackPanel Spacing="10" Orientation="Horizontal" HorizontalAlignment="Center">
-                    <!-- Y轴工件数 -->
+                    <!-- X轴工件数 -->
                     <StackPanel Spacing="5" Orientation="Vertical">
-                        <TextBlock Text="Y轴工件数" FontSize="10" Foreground="Black" HorizontalAlignment="Center"/>
+                        <TextBlock Text="X轴工件数" FontSize="10" Foreground="Black" HorizontalAlignment="Center"/>
                         <TextBox x:Name="XWorkpieceCount" Width="60" Height="25" FontSize="12" 
                                  Text="0" TextAlignment="Center" TextChanged="OnWorkpieceCountTextChanged"/>
                     </StackPanel>
 
-                    <!-- X轴工件数 -->
+                    <!-- Y轴工件数 -->
                     <StackPanel Spacing="5" Orientation="Vertical">
-                        <TextBlock Text="X轴工件数" FontSize="10" Foreground="Black" HorizontalAlignment="Center"/>
+                        <TextBlock Text="Y轴工件数" FontSize="10" Foreground="Black" HorizontalAlignment="Center"/>
                         <TextBox x:Name="YWorkpieceCount" Width="60" Height="25" FontSize="12" 
                                  Text="0" TextAlignment="Center" TextChanged="OnWorkpieceCountTextChanged"/>
                     </StackPanel>

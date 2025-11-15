@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Documents;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
@@ -38,6 +39,10 @@ namespace ava_demo_new.Views
 
         // 新增：选中的工件
         private Border? _selectedWorkpiece;
+
+        // 在类顶部添加ID计数器
+        private int _workpieceIdCounter = 1;
+        private readonly Dictionary<int, Border> _workpieceById = new();
 
         // 存储每个工件的旋转角度
         private readonly Dictionary<string, double> _workpieceRotations = new();
@@ -79,13 +84,13 @@ namespace ava_demo_new.Views
             // 更新X轴坐标（下方的水平坐标轴）
             if (YAxisBorder != null) // 注意：这里YAxisBorder实际上是X轴的水平坐标显示
             {
-                YAxisBorder.Width = _platformWidth; // X轴坐标的宽度 = X轴长度
+                YAxisBorder.Width = _platformWidth; // Y轴坐标的宽度 = Y轴长度
             }
 
             // 更新Y轴坐标（左侧的垂直坐标轴）
             if (XAxisBorder != null) // 注意：这里XAxisBorder实际上是Y轴的垂直坐标显示
             {
-                XAxisBorder.Height = _platformHeight; // Y轴坐标的高度 = Y轴长度
+                XAxisBorder.Height = _platformHeight + 10; // X轴坐标的高度 = X轴长度
             }
 
             // 更新外部容器（托盘）尺寸
@@ -181,6 +186,13 @@ namespace ava_demo_new.Views
             double newRotation = (currentRotation + angle) % 360;
             if (newRotation < 0) newRotation += 360;
 
+            // 在旋转前进行碰撞检测
+            if (CheckRotationCollision(_selectedWorkpiece, newRotation))
+            {
+                ShowRotationCollisionWarning();
+                return;
+            }
+
             _workpieceRotations[workpieceName] = newRotation;
 
             Console.WriteLine($"旋转工件 {workpieceName}: {currentRotation}° -> {newRotation}°");
@@ -188,6 +200,85 @@ namespace ava_demo_new.Views
             // 应用旋转
             ApplyRotationToWorkpiece(_selectedWorkpiece, newRotation);
             SaveCurrentState();
+        }
+
+        // 修复方案 - 使用这个版本替换原来的 ShowRotationCollisionWarning 方法
+        private void ShowRotationCollisionWarning()
+        {
+            var dialogWindow = new Window
+            {
+                Title = "旋转冲突警告",
+                Width = 480, // 增加宽度
+                Height = 260,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                CanResize = false,
+            };
+
+            var stackPanel = new StackPanel
+            {
+                Spacing = 20,
+                Margin = new Thickness(25),
+                HorizontalAlignment = HorizontalAlignment.Stretch, // 重要：允许拉伸
+                VerticalAlignment = VerticalAlignment.Center
+            };
+
+            var warningIcon = new TextBlock
+            {
+                Text = "🔄⚠️",
+                FontSize = 32,
+                HorizontalAlignment = HorizontalAlignment.Center
+            };
+
+            var messageText = new TextBlock
+            {
+                Text = "旋转会导致工件重叠或超出边界！\n\n请先将工件拖拽到开阔位置再进行旋转操作。",
+                FontSize = 14,
+                TextWrapping = TextWrapping.Wrap,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                TextAlignment = TextAlignment.Center,
+                // 添加以下约束确保正确换行
+                MinWidth = 300, // 确保最小宽度
+                MaxWidth = 400 // 限制最大宽度
+            };
+
+            var buttonPanel = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Spacing = 15,
+                HorizontalAlignment = HorizontalAlignment.Center
+            };
+
+
+            var okButton = new Button
+            {
+                Content = "确定",
+                Width = 80,
+                Height = 30,
+                Background = new SolidColorBrush(Color.FromRgb(40, 167, 69)),
+                Foreground = Brushes.White
+            };
+
+
+            okButton.Click += (s, e) => dialogWindow.Close();
+
+
+            buttonPanel.Children.Add(okButton);
+
+            stackPanel.Children.Add(warningIcon);
+            stackPanel.Children.Add(messageText);
+            stackPanel.Children.Add(buttonPanel);
+
+            dialogWindow.Content = stackPanel;
+
+            if (VisualRoot is Window parentWindow)
+            {
+                dialogWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                dialogWindow.ShowDialog(parentWindow);
+            }
+            else
+            {
+                dialogWindow.Show();
+            }
         }
 
         private void ApplyRotationToWorkpiece(Border workpiece, double rotation)
@@ -328,11 +419,155 @@ namespace ava_demo_new.Views
 
         #endregion
 
+        #region 旋转碰撞检测
+
+        private bool CheckRotationCollision(Border workpiece, double newRotation)
+        {
+            if (DragCanvas == null) return false;
+
+            // 获取当前工件的旋转角度
+            string workpieceName = workpiece.Name ?? "";
+            double currentRotation =
+                _workpieceRotations.ContainsKey(workpieceName) ? _workpieceRotations[workpieceName] : 0;
+
+            // 计算旋转后的尺寸和位置
+            var rotatedInfo = CalculateRotatedWorkpieceInfo(workpiece, currentRotation, newRotation);
+
+            // 检查边界碰撞
+            if (CheckBoundaryCollision(rotatedInfo.Bounds))
+            {
+                Console.WriteLine($"旋转碰撞检测: 工件 {workpieceName} 旋转后会超出边界");
+                return true;
+            }
+
+            // 检查与其他工件的碰撞
+            foreach (Control otherControl in DragCanvas.Children)
+            {
+                if (otherControl == workpiece || !(otherControl is Border otherWorkpiece)) continue;
+                if (otherWorkpiece.Name?.StartsWith("Workpiece") != true) continue;
+
+                // 获取其他工件的边界
+                Rect otherBounds = new Rect(
+                    otherControl.GetValue(Canvas.LeftProperty),
+                    otherControl.GetValue(Canvas.TopProperty),
+                    otherControl.Width,
+                    otherControl.Height
+                );
+
+                // 检查旋转后是否与其它工件碰撞
+                if (rotatedInfo.Bounds.Intersects(otherBounds))
+                {
+                    Console.WriteLine($"旋转碰撞检测: 工件 {workpieceName} 旋转后会与 {otherWorkpiece.Name} 碰撞");
+                    Console.WriteLine($"旋转后边界: {rotatedInfo.Bounds}, 其他边界: {otherBounds}");
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private RotatedWorkpieceInfo CalculateRotatedWorkpieceInfo(Border workpiece, double currentRotation,
+            double newRotation)
+        {
+            // 获取当前边距
+            double xMargin = GetCurrentXMargin();
+            double yMargin = GetCurrentYMargin();
+
+            // 保存当前位置和尺寸
+            double originalLeft = Canvas.GetLeft(workpiece);
+            double originalTop = Canvas.GetTop(workpiece);
+            double originalWidth = workpiece.Width;
+            double originalHeight = workpiece.Height;
+
+            // 计算旋转后的尺寸
+            double newWidth, newHeight;
+
+            if (newRotation % 180 == 90) // 90度或270度
+            {
+                newWidth = _blockHeight + 2 * yMargin;
+                newHeight = _blockWidth + 2 * xMargin;
+            }
+            else // 0度或180度
+            {
+                newWidth = _blockWidth + 2 * xMargin;
+                newHeight = _blockHeight + 2 * yMargin;
+            }
+
+            // 计算新的位置，保持中心点不变
+            double centerX = originalLeft + originalWidth / 2;
+            double centerY = originalTop + originalHeight / 2;
+            double newLeft = centerX - newWidth / 2;
+            double newTop = centerY - newHeight / 2;
+
+            return new RotatedWorkpieceInfo
+            {
+                Bounds = new Rect(newLeft, newTop, newWidth, newHeight),
+                NewLeft = newLeft,
+                NewTop = newTop,
+                NewWidth = newWidth,
+                NewHeight = newHeight
+            };
+        }
+
+        private class RotatedWorkpieceInfo
+        {
+            public Rect Bounds { get; set; }
+            public double NewLeft { get; set; }
+            public double NewTop { get; set; }
+            public double NewWidth { get; set; }
+            public double NewHeight { get; set; }
+        }
+
+        #endregion
+
+
         #region 删除和清空功能
 
         private void DeleteButton_Click(object? sender, RoutedEventArgs e)
         {
-            DeleteLastWorkpiece();
+            DeleteSelectedWorkpiece();
+        }
+
+        private void DeleteSelectedWorkpiece()
+        {
+            if (_selectedWorkpiece == null)
+            {
+                ShowTemporaryMessage("请先选择一个要删除的工件");
+                return;
+            }
+
+            if (DragCanvas == null) return;
+
+            // 获取选中工件的ID
+            string workpieceName = _selectedWorkpiece.Name ?? "";
+            if (string.IsNullOrEmpty(workpieceName) || !workpieceName.StartsWith("Workpiece"))
+            {
+                ShowTemporaryMessage("无效的工件");
+                return;
+            }
+
+            // 从名称中提取ID
+            if (int.TryParse(workpieceName.Replace("Workpiece", ""), out int workpieceId))
+            {
+                // 从字典中移除
+                _workpieceRotations.Remove(workpieceName);
+                _workpieceById.Remove(workpieceId);
+
+                // 从Canvas中移除
+                DragCanvas.Children.Remove(_selectedWorkpiece);
+
+                // 取消选中状态
+                DeselectWorkpiece();
+
+                SaveCurrentState();
+                ShowTemporaryMessage($"已删除工件 {workpieceName}");
+
+                Console.WriteLine($"删除工件: {workpieceName}, ID: {workpieceId}");
+            }
+            else
+            {
+                ShowTemporaryMessage("无法解析工件ID");
+            }
         }
 
         private void ClearAllButton_Click(object? sender, RoutedEventArgs e)
@@ -342,15 +577,12 @@ namespace ava_demo_new.Views
 
         private void DeleteLastWorkpiece()
         {
-            if (DragCanvas == null) return;
+            if (DragCanvas == null || _workpieceIdCounter <= 1) return;
 
-            var lastWorkpiece = DragCanvas.Children
-                .OfType<Border>()
-                .Where(b => b.Name?.StartsWith("Workpiece") == true)
-                .OrderByDescending(b => b.Name)
-                .FirstOrDefault();
+            // 获取最大的ID
+            int lastId = _workpieceIdCounter - 1;
 
-            if (lastWorkpiece != null)
+            if (_workpieceById.TryGetValue(lastId, out var lastWorkpiece))
             {
                 if (_selectedWorkpiece == lastWorkpiece)
                 {
@@ -359,9 +591,11 @@ namespace ava_demo_new.Views
 
                 // 从字典中移除
                 _workpieceRotations.Remove(lastWorkpiece.Name ?? "");
+                _workpieceById.Remove(lastId);
 
                 DragCanvas.Children.Remove(lastWorkpiece);
-                _currentBlockNumber--;
+                _workpieceIdCounter--; // ID递减
+
                 SaveCurrentState();
                 ShowTemporaryMessage("已删除最后一个工件");
                 UpdateLayoutState();
@@ -385,13 +619,21 @@ namespace ava_demo_new.Views
 
             foreach (var workpiece in workpiecesToRemove)
             {
-                _workpieceRotations.Remove(workpiece.Name ?? "");
+                string workpieceName = workpiece.Name ?? "";
+                _workpieceRotations.Remove(workpieceName);
+
+                // 从名称中提取ID并从字典中移除
+                if (int.TryParse(workpieceName.Replace("Workpiece", ""), out int workpieceId))
+                {
+                    _workpieceById.Remove(workpieceId);
+                }
+
                 DragCanvas.Children.Remove(workpiece);
             }
 
-            _currentBlockNumber = 1;
-            _currentXPosition = 0;
+            // 注意：不清空 _workpieceIdCounter，因为ID应该继续递增
             _currentYPosition = 0;
+            _currentXPosition = 0;
             SaveCurrentState();
             ShowTemporaryMessage("已清空所有工件");
         }
@@ -408,21 +650,19 @@ namespace ava_demo_new.Views
 
             if (workpieces.Count == 0)
             {
-                _currentBlockNumber = 1;
-                _currentXPosition = 0;
                 _currentYPosition = 0;
+                _currentXPosition = 0;
                 return;
             }
 
-            _currentBlockNumber = workpieces.Count + 1;
             var lastWorkpiece = workpieces.Last();
             double lastLeft = Canvas.GetLeft(lastWorkpiece);
             double lastTop = Canvas.GetTop(lastWorkpiece);
             double lastWidth = lastWorkpiece.Width;
             double lastHeight = lastWorkpiece.Height;
 
-            _currentXPosition = lastLeft + lastWidth;
-            _currentYPosition = lastTop;
+            _currentYPosition = lastLeft + lastWidth;
+            _currentXPosition = lastTop;
         }
 
         #endregion
@@ -448,7 +688,7 @@ namespace ava_demo_new.Views
                 e.Pointer.Capture(control);
                 control.Opacity = 0.7;
 
-                Console.WriteLine($"开始拖拽: {control.Name}, 位置: ({left}, {top})");
+                Console.WriteLine($"开始拖拽: {control.Name}, 位置xy: ( {top}),{left},");
             }
         }
 
@@ -474,7 +714,7 @@ namespace ava_demo_new.Views
                 Canvas.SetLeft(_draggedControl, newX);
                 Canvas.SetTop(_draggedControl, newY);
 
-                Console.WriteLine($"拖拽中: ({newX:F1}, {newY:F1})");
+                Console.WriteLine($"拖拽中xy: (  {newY:F1},{newX:F1})");
             }
         }
 
@@ -582,12 +822,18 @@ namespace ava_demo_new.Views
         {
             try
             {
-                int xCount = int.Parse(XWorkpieceCount?.Text ?? "0"); // X轴工件数 = 横向排列
-                int yCount = int.Parse(YWorkpieceCount?.Text ?? "0"); // Y轴工件数 = 纵向排列
+                int xCount = int.Parse(XWorkpieceCount?.Text ?? "0"); // X轴工件数 = 竖向排列
+                int yCount = int.Parse(YWorkpieceCount?.Text ?? "0"); // Y轴工件数 = 横向排列
                 double xMargin = double.Parse(XMargin?.Text ?? "10");
                 double yMargin = double.Parse(YMargin?.Text ?? "10");
 
                 if (!ValidateInput(xCount, yCount)) return;
+
+                // 先检查是否有足够空间
+                if (!CheckAvailableSpace(xCount, yCount, xMargin, yMargin))
+                {
+                    return;
+                }
 
                 if (!CheckBoundary(xCount, yCount, xMargin, yMargin))
                 {
@@ -605,27 +851,74 @@ namespace ava_demo_new.Views
             }
         }
 
+// 新增方法：检查可用空间
+        private bool CheckAvailableSpace(int xCount, int yCount, double xMargin, double yMargin)
+        {
+            if (xCount <= 0 && yCount <= 0) return true;
+
+            // 模拟添加过程，检查是否会超出边界
+            double currentY = _currentYPosition;
+            double currentX = _currentXPosition;
+
+            int totalCount = Math.Max(xCount, yCount);
+            double totalWidth, totalHeight;
+
+            if (xCount > 0)
+            {
+                totalWidth = _blockHeight + 2 * xMargin;
+                totalHeight = _blockWidth + 2 * yMargin;
+            }
+            else
+            {
+                totalWidth = _blockWidth + 2 * xMargin;
+                totalHeight = _blockHeight + 2 * yMargin;
+            }
+
+            for (int i = 0; i < totalCount; i++)
+            {
+                if (currentY + totalWidth > _platformWidth)
+                {
+                    currentY = 0;
+                    currentX = GetAllWorkpiecesMaxX();
+
+                    if (currentX + totalHeight > _platformHeight)
+                    {
+                        ShowWarningMessage("托盘空间不足，无法添加所有工件");
+                        return false;
+                    }
+                }
+
+                currentY += totalWidth;
+            }
+
+            return true;
+        }
+
         private bool CheckBoundary(int xCount, int yCount, double xMargin, double yMargin)
         {
             if (xCount <= 0 && yCount <= 0) return true;
 
-            double totalBlockWidth = _blockWidth + 2 * xMargin; // 单个工件总宽度
-            double totalBlockHeight = _blockHeight + 2 * yMargin; // 单个工件总高度
-
-            // 修正：X轴工件检查宽度，Y轴工件检查高度
-            if (xCount > 0)
+            // Y轴工件（横向）：正常检查
+            if (yCount > 0)
             {
-                double requiredWidth = xCount * totalBlockWidth;
-                if (requiredWidth > _platformWidth) // X轴工件检查平台宽度
+                double totalBlockWidth = _blockWidth + 2 * xMargin;
+                double totalBlockHeight = _blockHeight + 2 * yMargin;
+
+                double requiredWidth = yCount * totalBlockWidth;
+                if (requiredWidth > _platformWidth)
                 {
                     ShowDetailedWarningMessage(xCount, yCount, xMargin, yMargin);
                     return false;
                 }
             }
-            else if (yCount > 0)
+            // X轴工件（竖向）：宽高交换检查
+            else if (xCount > 0)
             {
-                double requiredHeight = yCount * totalBlockHeight;
-                if (requiredHeight > _platformHeight) // Y轴工件检查平台高度
+                double totalBlockWidth = _blockHeight + 2 * xMargin; // 竖向工件：宽度 = 原高度
+                double totalBlockHeight = _blockWidth + 2 * yMargin; // 竖向工件：高度 = 原宽度
+
+                double requiredWidth = xCount * totalBlockWidth;
+                if (requiredWidth > _platformWidth)
                 {
                     ShowDetailedWarningMessage(xCount, yCount, xMargin, yMargin);
                     return false;
@@ -637,15 +930,17 @@ namespace ava_demo_new.Views
 
         private int CalculateMaxXCount(double xMargin, double yMargin)
         {
-            double totalBlockWidth = _blockWidth + 2 * xMargin;
-            int maxCount = (int)Math.Floor(_platformWidth / totalBlockWidth); // X轴工件数受平台宽度限制
+            // X轴工件（竖向）：宽高交换计算
+            double totalBlockWidth = _blockHeight + 2 * xMargin; // 宽度 = 原高度
+            int maxCount = (int)Math.Floor(_platformWidth / totalBlockWidth);
             return Math.Max(0, maxCount);
         }
 
         private int CalculateMaxYCount(double xMargin, double yMargin)
         {
-            double totalBlockHeight = _blockHeight + 2 * yMargin;
-            int maxCount = (int)Math.Floor(_platformHeight / totalBlockHeight); // Y轴工件数受平台高度限制
+            // Y轴工件（横向）：正常计算
+            double totalBlockWidth = _blockWidth + 2 * xMargin;
+            int maxCount = (int)Math.Floor(_platformWidth / totalBlockWidth);
             return Math.Max(0, maxCount);
         }
 
@@ -653,189 +948,246 @@ namespace ava_demo_new.Views
         {
             if (DragCanvas == null || OuterContainerBorder == null) return;
 
-            double innerBlockWidth = _blockWidth;
-            double innerBlockHeight = _blockHeight;
-
-            double totalWidth = innerBlockWidth + 2 * xMargin;
-            double totalHeight = innerBlockHeight + 2 * yMargin;
-
             if (xCount > 0)
             {
-                // X轴工件 = 横向排列
-                AddWorkpiecesInXDirection(xCount, totalWidth, totalHeight, innerBlockWidth, innerBlockHeight, xMargin,
-                    yMargin);
+                // X轴工件 = 竖向排列（旋转90度）
+                AddWorkpiecesInXDirection(xCount, xMargin, yMargin);
             }
             else if (yCount > 0)
             {
-                // Y轴工件 = 纵向排列
-                AddWorkpiecesInYDirection(yCount, totalWidth, totalHeight, innerBlockWidth, innerBlockHeight, xMargin,
-                    yMargin);
+                // Y轴工件 = 横向排列（默认方向）
+                AddWorkpiecesInYDirection(yCount, xMargin, yMargin);
             }
 
             Console.WriteLine($"添加了 {xCount + yCount} 个工件");
             ShowTemporaryMessage($"成功添加 {xCount + yCount} 个工件");
         }
 
-        private void AddWorkpiecesInXDirection(int count, double totalWidth, double totalHeight,
-            double innerWidth, double innerHeight, double xMargin, double yMargin)
+        private void AddWorkpiecesInXDirection(int count, double xMargin, double yMargin)
         {
-            double startX = _currentXPosition;
-            double startY = _currentYPosition;
+            // X轴工件（竖向）：宽高交换
+            double innerWidth = _blockHeight; // 内部宽度 = 原高度
+            double innerHeight = _blockWidth; // 内部高度 = 原宽度
+            double totalWidth = innerWidth + 2 * xMargin; // 横向宽度
+            double totalHeight = innerHeight + 2 * yMargin; // 纵向高度
+
+            double currentY = _currentYPosition; // 当前横向位置Y
+            double currentX = _currentXPosition; // 当前纵向位置X
 
             for (int i = 0; i < count; i++)
             {
-                double posX = startX + i * totalWidth; // 横向排列
-                double posY = startY;
-
-                // 检查是否需要换行（Y方向）
-                if (posX + totalWidth > _platformWidth)
+                // 检查当前行是否还有空间（横向Y方向）
+                if (currentY + totalWidth > _platformWidth)
                 {
-                    startX = 0;
-                    startY += totalHeight; // 换到下一行
-                    posX = 0;
-                    posY = startY;
+                    // 换行：横向位置Y重置为0，纵向位置X更新为所有工件的最大X值
+                    currentY = 0;
+                    currentX = GetAllWorkpiecesMaxX();
 
-                    // 检查是否超出托盘高度
-                    if (posY + totalHeight > _platformHeight)
+                    // 检查换行后是否超出边界
+                    if (currentX + totalHeight > _platformHeight)
                     {
                         ShowWarningMessage("无法添加更多工件，托盘已满");
-                        break;
+                        return; // 改为 return 而不是 break
                     }
                 }
 
-                // 确保位置在边界内
-                posX = Math.Max(0, Math.Min(posX, _platformWidth - totalWidth));
-                posY = Math.Max(0, Math.Min(posY, _platformHeight - totalHeight));
+                double posY = currentY; // 横向位置
+                double posX = currentX; // 纵向位置
 
-                CreateWorkpiece(_currentBlockNumber, posX, posY, innerWidth, innerHeight, xMargin, yMargin);
+                // 确保位置在边界内
+                posY = Math.Max(0, Math.Min(posY, _platformWidth - totalWidth));
+                posX = Math.Max(0, Math.Min(posX, _platformHeight - totalHeight));
+
+                // 创建竖向工件（旋转90度）
+                CreateVerticalWorkpiece(posY, posX, innerWidth, innerHeight, xMargin, yMargin);
                 _currentBlockNumber++;
 
-                // 更新当前位置
-                _currentXPosition = posX + totalWidth;
-                _currentYPosition = posY;
+                // 更新当前位置 - 横向位置增加，纵向位置保持不变
+                currentY = posY + totalWidth;
+                currentX = posX;
 
-                Console.WriteLine($"添加X方向工件 {_currentBlockNumber - 1} 到位置: ({posX}, {posY})");
+                Console.WriteLine($"添加X方向(竖向)工件 {_currentBlockNumber - 1} 到位置: (横向Y:{posY}, 纵向X:{posX})");
             }
+
+            // 更新全局位置状态
+            _currentYPosition = currentY;
+            _currentXPosition = currentX;
         }
 
-        private void AddWorkpiecesInYDirection(int count, double totalWidth, double totalHeight,
-            double innerWidth, double innerHeight, double xMargin, double yMargin)
+        private void AddWorkpiecesInYDirection(int count, double xMargin, double yMargin)
         {
-            double startX = _currentXPosition;
-            double startY = _currentYPosition;
+            // Y轴工件（横向）：正常方向
+            double innerWidth = _blockWidth;
+            double innerHeight = _blockHeight;
+            double totalWidth = innerWidth + 2 * xMargin; // 横向宽度
+            double totalHeight = innerHeight + 2 * yMargin; // 纵向高度
+
+            double currentY = _currentYPosition; // 当前横向位置Y
+            double currentX = _currentXPosition; // 当前纵向位置X
 
             for (int i = 0; i < count; i++)
             {
-                double posX = startX;
-                double posY = startY + i * totalHeight; // 纵向排列
-
-                // 检查是否需要换列（X方向）
-                if (posY + totalHeight > _platformHeight)
+                // 检查当前行是否还有空间（横向Y方向）
+                if (currentY + totalWidth > _platformWidth)
                 {
-                    startX += totalWidth; // 换到下一列
-                    startY = 0;
-                    posX = startX;
-                    posY = 0;
+                    // 换行：横向位置Y重置为0，纵向位置X更新为所有工件的最大X值
+                    currentY = 0;
+                    currentX = GetAllWorkpiecesMaxX();
 
-                    // 检查是否超出托盘宽度
-                    if (posX + totalWidth > _platformWidth)
+                    // 检查换行后是否超出边界
+                    if (currentX + totalHeight > _platformHeight)
                     {
                         ShowWarningMessage("无法添加更多工件，托盘已满");
-                        break;
+                        return; // 改为 return 而不是 break
                     }
                 }
 
+                double posY = currentY; // 横向位置
+                double posX = currentX; // 纵向位置
+
                 // 确保位置在边界内
-                posX = Math.Max(0, Math.Min(posX, _platformWidth - totalWidth));
-                posY = Math.Max(0, Math.Min(posY, _platformHeight - totalHeight));
+                posY = Math.Max(0, Math.Min(posY, _platformWidth - totalWidth));
+                posX = Math.Max(0, Math.Min(posX, _platformHeight - totalHeight));
 
-                CreateWorkpiece(_currentBlockNumber, posX, posY, innerWidth, innerHeight, xMargin, yMargin);
-                _currentBlockNumber++;
+                // 创建横向工件（默认方向）
+                CreateHorizontalWorkpiece(posY, posX, innerWidth, innerHeight, xMargin, yMargin);
 
-                // 更新当前位置
-                _currentXPosition = posX;
-                _currentYPosition = posY + totalHeight;
+                // 更新当前位置 - 横向位置增加，纵向位置保持不变
+                currentY = posY + totalWidth;
+                currentX = posX;
 
-                Console.WriteLine($"添加Y方向工件 {_currentBlockNumber - 1} 到位置: ({posX}, {posY})");
+                Console.WriteLine($"添加Y方向(横向)工件 {_currentBlockNumber - 1} 到位置: (横向Y:{posY}, 纵向X:{posX})");
             }
+
+            // 更新全局位置状态
+            _currentYPosition = currentY;
+            _currentXPosition = currentX;
         }
 
-        private void CreateWorkpiece(int blockNumber, double posX, double posY, double innerWidth, double innerHeight,
+// 获取所有工件的最大X值（纵向位置）
+        private double GetAllWorkpiecesMaxX()
+        {
+            if (DragCanvas == null) return 0;
+
+            double maxX = 0;
+
+            foreach (Control child in DragCanvas.Children)
+            {
+                if (child is Border border && border.Name?.StartsWith("Workpiece") == true)
+                {
+                    double top = Canvas.GetTop(border); // 这是纵向位置X
+                    double height = border.Height;
+                    double bottom = top + height; // 工件的底部X坐标
+
+                    if (bottom > maxX)
+                    {
+                        maxX = bottom;
+                    }
+                }
+            }
+
+            Console.WriteLine($"所有工件的最大X值: {maxX}");
+            return maxX;
+        }
+
+// 创建横向工件（默认方向）
+        private void CreateHorizontalWorkpiece(double posY, double posX, double innerWidth, double innerHeight,
             double xMargin, double yMargin)
         {
-            // 创建内部方块（默认粉色）
-            var innerBlock = new Border
-            {
-                Width = innerWidth, // 初始宽度 = 块宽度
-                Height = innerHeight, // 初始高度 = 块高度
-                Background = Brushes.Pink, // 默认粉色
-                CornerRadius = new CornerRadius(0)
-            };
-
-            var textBlock = new TextBlock
-            {
-                Text = blockNumber.ToString(),
-                Foreground = Brushes.White,
-                FontSize = 16,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center
-            };
-
-            // 初始化文字旋转为0度
-            textBlock.RenderTransform = new RotateTransform(0);
-            textBlock.RenderTransformOrigin = new RelativePoint(0.5, 0.5, RelativeUnit.Relative);
-
-            innerBlock.Child = textBlock;
-
-            // 创建外部边框
-            var outerBorder = new Border
-            {
-                Name = $"Workpiece{blockNumber}",
-                Width = innerWidth + 2 * xMargin,
-                Height = innerHeight + 2 * yMargin,
-                Background = Brushes.Transparent,
-                BorderBrush = Brushes.Blue, // 蓝色边框
-                BorderThickness = new Thickness(1),
-                CornerRadius = new CornerRadius(0),
-                Cursor = new Cursor(StandardCursorType.SizeAll)
-            };
-
-            var container = new Grid
-            {
-                Width = innerWidth + 2 * xMargin,
-                Height = innerHeight + 2 * yMargin,
-                Background = Brushes.Transparent
-            };
-
-            innerBlock.HorizontalAlignment = HorizontalAlignment.Center;
-            innerBlock.VerticalAlignment = VerticalAlignment.Center;
-            innerBlock.Margin = new Thickness(0);
-
-            container.Children.Add(innerBlock);
-            outerBorder.Child = container;
-
-            Canvas.SetLeft(outerBorder, posX);
-            Canvas.SetTop(outerBorder, posY);
-
-            // 初始化旋转角度为0
-            _workpieceRotations[outerBorder.Name] = 0;
-
-            AddDragEvents(outerBorder);
-
-            outerBorder.PointerPressed += (sender, e) =>
-            {
-                if (e.GetCurrentPoint(outerBorder).Properties.IsLeftButtonPressed)
-                {
-                    SelectWorkpiece(outerBorder);
-                    e.Handled = true;
-                }
-            };
-
-            DragCanvas!.Children.Add(outerBorder);
-
-            Console.WriteLine(
-                $"创建工件: Workpiece{blockNumber}, 位置: ({posX}, {posY}), 尺寸: {outerBorder.Width}x{outerBorder.Height}");
+            CreateWorkpiece(posY, posX, innerWidth, innerHeight, xMargin, yMargin, 0);
         }
+
+// 创建竖向工件（旋转90度）
+        private void CreateVerticalWorkpiece(double posY, double posX, double innerWidth, double innerHeight,
+            double xMargin, double yMargin)
+        {
+            CreateWorkpiece(posY, posX, innerWidth, innerHeight, xMargin, yMargin, 90);
+        }
+
+// 修改创建工件的方法
+       private void CreateWorkpiece(double posY, double posX, double innerWidth, double innerHeight,
+    double xMargin, double yMargin, double initialRotation)
+{
+    int currentId = _workpieceIdCounter; // 获取当前ID
+
+    // 创建内部方块（默认粉色）
+    var innerBlock = new Border
+    {
+        Width = innerWidth,
+        Height = innerHeight,
+        Background = Brushes.Pink,
+        CornerRadius = new CornerRadius(0)
+    };
+
+    var textBlock = new TextBlock
+    {
+        Text = currentId.ToString(), // 显示当前ID
+        Foreground = Brushes.White,
+        FontSize = 16,
+        HorizontalAlignment = HorizontalAlignment.Center,
+        VerticalAlignment = VerticalAlignment.Center
+    };
+
+    // 设置初始旋转
+    textBlock.RenderTransform = new RotateTransform(initialRotation);
+    textBlock.RenderTransformOrigin = new RelativePoint(0.5, 0.5, RelativeUnit.Relative);
+
+    innerBlock.Child = textBlock;
+
+    // 创建外部边框
+    var outerBorder = new Border
+    {
+        Name = $"Workpiece{currentId}", // 使用当前ID作为名称
+        Width = innerWidth + 2 * xMargin,
+        Height = innerHeight + 2 * yMargin,
+        Background = Brushes.Transparent,
+        BorderBrush = Brushes.Blue,
+        BorderThickness = new Thickness(1),
+        CornerRadius = new CornerRadius(0),
+        Cursor = new Cursor(StandardCursorType.SizeAll)
+    };
+
+    var container = new Grid
+    {
+        Width = innerWidth + 2 * xMargin,
+        Height = innerHeight + 2 * yMargin,
+        Background = Brushes.Transparent
+    };
+
+    innerBlock.HorizontalAlignment = HorizontalAlignment.Center;
+    innerBlock.VerticalAlignment = VerticalAlignment.Center;
+    innerBlock.Margin = new Thickness(0);
+
+    container.Children.Add(innerBlock);
+    outerBorder.Child = container;
+
+    Canvas.SetLeft(outerBorder, posY);
+    Canvas.SetTop(outerBorder, posX);
+
+    // 设置初始旋转角度
+    _workpieceRotations[outerBorder.Name] = initialRotation;
+    
+    // 记录工件ID映射
+    _workpieceById[currentId] = outerBorder;
+
+    AddDragEvents(outerBorder);
+
+    outerBorder.PointerPressed += (sender, e) =>
+    {
+        if (e.GetCurrentPoint(outerBorder).Properties.IsLeftButtonPressed)
+        {
+            SelectWorkpiece(outerBorder);
+            e.Handled = true;
+        }
+    };
+
+    DragCanvas!.Children.Add(outerBorder);
+
+    Console.WriteLine($"创建工件: Workpiece{currentId}, 位置: (横向Y:{posY}, 纵向X:{posX}), " +
+                      $"尺寸: {outerBorder.Width}x{outerBorder.Height}, 旋转: {initialRotation}°");
+    
+    _workpieceIdCounter++; // ID自增
+}
 
         private void OnWorkpieceCountTextChanged(object? sender, TextChangedEventArgs e)
         {
@@ -860,128 +1212,128 @@ namespace ava_demo_new.Views
 
         #endregion
 
-     #region 导出坐标功能
+        #region 导出坐标功能
 
-private void ExportButton_Click(object? sender, RoutedEventArgs e)
-{
-    ExportWorkpieceCoordinates();
-}
-
-private void ExportWorkpieceCoordinates()
-{
-    if (DragCanvas == null || DragCanvas.Children.Count == 0)
-    {
-        ShowTemporaryMessage("没有可导出的工件");
-        return;
-    }
-
-    try
-    {
-        var workpieces = DragCanvas.Children
-            .OfType<Border>()
-            .Where(b => b.Name?.StartsWith("Workpiece") == true)
-            .ToList();
-
-        if (workpieces.Count == 0)
+        private void ExportButton_Click(object? sender, RoutedEventArgs e)
         {
-            ShowTemporaryMessage("没有找到可导出的工件");
-            return;
+            ExportWorkpieceCoordinates();
         }
 
-        var workpieceList = new List<WorkpieceCoordinate>();
-
-        foreach (var workpiece in workpieces)
+        private void ExportWorkpieceCoordinates()
         {
-            string name = workpiece.Name ?? "Unknown";
-            double canvasLeft = Canvas.GetLeft(workpiece);  // 横向坐标（Y轴）
-            double canvasTop = Canvas.GetTop(workpiece);    // 纵向坐标（X轴）
-            
-            // 获取旋转角度
-            double rotation = _workpieceRotations.ContainsKey(name) ? _workpieceRotations[name] : 0;
-
-            // 计算中心点坐标
-            double centerX = canvasTop + workpiece.Height / 2;    // X坐标（纵向）
-            double centerY = canvasLeft + workpiece.Width / 2;    // Y坐标（横向）
-
-            var coordinate = new WorkpieceCoordinate
+            if (DragCanvas == null || DragCanvas.Children.Count == 0)
             {
-                Name = name,
-                X = Math.Round(centerX, 2),        // 纵向坐标
-                Y = Math.Round(centerY, 2),        // 横向坐标
-                Z = 0,
-                Rotation = Math.Round(rotation, 2),
-                Width = Math.Round(workpiece.Width, 2),
-                Height = Math.Round(workpiece.Height, 2),
-                CanvasLeft = canvasLeft,
-                CanvasTop = canvasTop
-            };
+                ShowTemporaryMessage("没有可导出的工件");
+                return;
+            }
 
-            workpieceList.Add(coordinate);
+            try
+            {
+                var workpieces = DragCanvas.Children
+                    .OfType<Border>()
+                    .Where(b => b.Name?.StartsWith("Workpiece") == true)
+                    .ToList();
+
+                if (workpieces.Count == 0)
+                {
+                    ShowTemporaryMessage("没有找到可导出的工件");
+                    return;
+                }
+
+                var workpieceList = new List<WorkpieceCoordinate>();
+
+                foreach (var workpiece in workpieces)
+                {
+                    string name = workpiece.Name ?? "Unknown";
+                    double canvasLeft = Canvas.GetLeft(workpiece); // 左上角横向坐标（X轴）
+                    double canvasTop = Canvas.GetTop(workpiece); // 左上角纵向坐标（Y轴）
+
+                    // 获取旋转角度
+                    double rotation = _workpieceRotations.ContainsKey(name) ? _workpieceRotations[name] : 0;
+
+                    // 计算中心点坐标（用于实际坐标数据）
+                    double centerX = canvasTop + workpiece.Height / 2; // X坐标（纵向）
+                    double centerY = canvasLeft + workpiece.Width / 2; // Y坐标（横向）
+
+                    var coordinate = new WorkpieceCoordinate
+                    {
+                        Name = name,
+                        X = Math.Round(centerX, 2), // 纵向坐标（中心点）
+                        Y = Math.Round(centerY, 2), // 横向坐标（中心点）
+                        Z = 0,
+                        Rotation = Math.Round(rotation, 2),
+                        Width = Math.Round(workpiece.Width, 2),
+                        Height = Math.Round(workpiece.Height, 2),
+                        CanvasLeft = canvasLeft, // 左上角横向坐标（用于排序）
+                        CanvasTop = canvasTop // 左上角纵向坐标（用于排序）
+                    };
+
+                    workpieceList.Add(coordinate);
+                }
+
+                // 按照码垛顺序排序：先按左上角Y坐标（纵向）从小到大，再按左上角X坐标（横向）从小到大
+                var sortedWorkpieces = workpieceList
+                    .OrderBy(w => w.CanvasTop) // 先按纵向坐标排序（从上到下）
+                    .ThenBy(w => w.CanvasLeft) // 再按横向坐标排序（从左到右）
+                    .ToList();
+
+                // 打印排序信息
+                Console.WriteLine("=== 工件排序信息（按左上角坐标）===");
+                var groupedByRow = sortedWorkpieces.GroupBy(w => Math.Floor(w.CanvasTop / 10) * 10).OrderBy(g => g.Key);
+                int rowNumber = 1;
+                foreach (var group in groupedByRow)
+                {
+                    Console.WriteLine(
+                        $"第{rowNumber}行 (Y≈{group.Key:F0}): {string.Join(", ", group.Select(w => $"{w.Name}(X={w.CanvasLeft:F1},Y={w.CanvasTop:F1})"))}");
+                    rowNumber++;
+                }
+
+                // 序列化为JSON
+                var options = new JsonSerializerOptions
+                {
+                    WriteIndented = true,
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                };
+
+                string json = JsonSerializer.Serialize(sortedWorkpieces, options);
+
+                // 打印到控制台
+                Console.WriteLine("=== 导出的工件坐标数据（按码垛顺序排序）===");
+                Console.WriteLine("排序规则: 先按左上角Y坐标(纵向)从小到大，再按左上角X坐标(横向)从小到大");
+                Console.WriteLine("码垛顺序: 从上到下逐行，每行从左到右");
+                Console.WriteLine(json);
+                Console.WriteLine("=== 数据结束 ===");
+
+                ShowTemporaryMessage($"已导出 {sortedWorkpieces.Count} 个工件的坐标数据（按码垛顺序排序）");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"导出坐标失败: {ex.Message}");
+                ShowWarningMessage($"导出坐标失败: {ex.Message}");
+            }
         }
 
-        // 按照码垛顺序排序：先按X（纵向）从小到大，再按Y（横向）从小到大
-        var sortedWorkpieces = workpieceList
-            .OrderBy(w => w.X)  // 先按纵向坐标排序（从上到下）
-            .ThenBy(w => w.Y)   // 再按横向坐标排序（从左到右）
-            .ToList();
+        #endregion
 
-        // 打印排序信息
-        Console.WriteLine("=== 工件排序信息 ===");
-        var groupedByX = sortedWorkpieces.GroupBy(w => w.X).OrderBy(g => g.Key);
-        int rowNumber = 1;
-        foreach (var group in groupedByX)
+        #region 数据类
+
+        public class WorkpieceCoordinate
         {
-            Console.WriteLine($"第{rowNumber}行 (X={group.Key:F2}): {string.Join(", ", group.Select(w => w.Name))}");
-            rowNumber++;
+            public string Name { get; set; } = string.Empty;
+            public double X { get; set; } // 纵向坐标（中心点）
+            public double Y { get; set; } // 横向坐标（中心点）
+            public double Z { get; set; }
+            public double Rotation { get; set; }
+            public double Width { get; set; }
+
+            public double Height { get; set; }
+
+            // 内部使用，用于排序（不导出到JSON）
+            [JsonIgnore] public double CanvasLeft { get; set; } // 左上角横向坐标
+            [JsonIgnore] public double CanvasTop { get; set; } // 左上角纵向坐标
         }
 
-        // 序列化为JSON
-        var options = new JsonSerializerOptions
-        {
-            WriteIndented = true,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        };
-
-        string json = JsonSerializer.Serialize(sortedWorkpieces, options);
-        
-        // 打印到控制台
-        Console.WriteLine("=== 导出的工件坐标数据（按码垛顺序排序）===");
-        Console.WriteLine("排序规则: 先按X(纵向)从小到大，再按Y(横向)从小到大");
-        Console.WriteLine("码垛顺序: 从上到下逐行，每行从左到右");
-        Console.WriteLine(json);
-        Console.WriteLine("=== 数据结束 ===");
-
-        ShowTemporaryMessage($"已导出 {sortedWorkpieces.Count} 个工件的坐标数据（按码垛顺序排序）");
-
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"导出坐标失败: {ex.Message}");
-        ShowWarningMessage($"导出坐标失败: {ex.Message}");
-    }
-}
-
-#endregion
-
-#region 数据类
-
-public class WorkpieceCoordinate
-{
-    public string Name { get; set; } = string.Empty;
-    public double X { get; set; }        // 纵向坐标
-    public double Y { get; set; }        // 横向坐标
-    public double Z { get; set; }
-    public double Rotation { get; set; }
-    public double Width { get; set; }
-    public double Height { get; set; }
-    // 内部使用，不导出到JSON
-    [JsonIgnore]
-    public double CanvasLeft { get; set; }
-    [JsonIgnore]
-    public double CanvasTop { get; set; }
-}
-
-#endregion
+        #endregion
 
 
         #region 工具方法

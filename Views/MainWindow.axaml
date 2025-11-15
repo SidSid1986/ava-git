@@ -598,7 +598,7 @@
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Stretch"
                                     Margin="8"
-                                    Click="codeClick">
+                                    Click="robotClick">
                                 <StackPanel Orientation="Vertical" HorizontalAlignment="Center"
                                             VerticalAlignment="Center">
                                     <Border BorderBrush="#E0E0E0" BorderThickness="2"
@@ -609,7 +609,7 @@
                                                Width="48" Height="48"
                                                Stretch="Uniform" />
                                     </Border>
-                                    <TextBlock Text="用户界面"
+                                    <TextBlock Text="机械臂"
                                                FontSize="14"
                                                FontWeight="SemiBold"
                                                HorizontalAlignment="Center"
